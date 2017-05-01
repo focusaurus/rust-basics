@@ -7,12 +7,18 @@
 //     let a2 = Album { year: 1999 };
 //     println!("Album {}", a2.year);
 // }
-fn area(dimensions: (u32, u32)) -> u32 {
-    dimensions.0 * dimensions.1
+struct Rectangle {
+    length: u32,
+    width: u32,
+}
+fn area(rect: Rectangle) -> u32 {
+    rect.length * rect.width
 }
 
 fn main() {
-    let length1: u32 = 32;
-    let width1: u32 = 42;
-    println!("The area is {}", area((length1, width1)));
+    let rect = Rectangle {
+        length: 32u32,
+        width: 42u32,
+    };
+    println!("The area is {}", area(rect));
 }
