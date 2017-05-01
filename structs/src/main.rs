@@ -11,14 +11,14 @@ struct Rectangle {
     length: u32,
     width: u32,
 }
-fn area(rect: Rectangle) -> u32 {
+fn area(rect: &Rectangle) -> u32 {
     rect.length * rect.width
 }
 
 fn main() {
     let rect = Rectangle {
-        length: 32u32,
-        width: 42u32,
+        length: 32,
+        width: 42,
     };
-    println!("The area is {}", area(rect));
+    println!("The area is {}", area(&rect));
 }
