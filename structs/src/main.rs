@@ -7,6 +7,7 @@
 //     let a2 = Album { year: 1999 };
 //     println!("Album {}", a2.year);
 // }
+#[derive(Debug)]
 struct Rectangle {
     length: u32,
     width: u32,
@@ -20,5 +21,5 @@ fn main() {
         length: 32,
         width: 42,
     };
-    println!("The area is {}", area(&rect));
+    println!("The area is {} {:?}", area(&rect), rect);
 }
