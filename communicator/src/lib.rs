@@ -3,5 +3,5 @@ mod tests {
     #[test]
     fn it_works() {}
 }
-mod network;
-mod client;
+pub mod network;
+pub mod client;
