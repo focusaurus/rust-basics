@@ -39,8 +39,8 @@ fn main() {
         Some(x) => x.to_string(),
     };
     println!("Hi. {}", hey);
-    let house = Some(5);
-    if let house = Some(5) {
+    let house: Option<Coin> = Some(Coin::Dime);
+    if let Some(Coin::Dime) = house {
         println!("foo")
     }
 }
