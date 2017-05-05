@@ -1,5 +1,7 @@
 pub trait Summarizable {
-    fn summary(&self) -> String;
+    fn summary(&self) -> String {
+        String::from("Read more...")
+    }
 }
 
 pub struct NewsArticle {
@@ -10,9 +12,9 @@ pub struct NewsArticle {
 }
 
 impl Summarizable for NewsArticle {
-    fn summary(&self) -> String {
-        format!("{}, by {} ({})", self.headline, self.author, self.location)
-    }
+    //     fn summary(&self) -> String {
+    //         format!("{}, by {} ({})", self.headline, self.author, self.location)
+    //     }
 }
 
 pub struct Tweet {
@@ -34,5 +36,12 @@ fn main() {
         reply: false,
         retweet: false,
     };
+    let article = NewsArticle {
+        headline: String::from("Trump ruins everything"),
+        author: String::from("John Doe"),
+        location: String::from("Springfield"),
+        content: String::from("Blah blah"),
+    };
     println!("Traits: {}", tweet.summary());
+    println!("Article: {}", article.summary());
 }
