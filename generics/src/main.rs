@@ -1,26 +1,29 @@
-fn largest_i32(numbers: &[i32]) -> i32 {
-    let mut result = numbers[0];
-    for &number in numbers.iter() {
-        if number > result {
-            result = number
-        }
-    }
-    result
+struct Point<T> {
+    x: T,
+    y: T,
 }
 
-fn largest_char(chars: &[char]) -> char {
-    let mut result = chars[0];
-    for &character in chars.iter() {
-        if character > result {
-            result = character
-        }
+impl<T> Point<T> {
+    fn x(&self) -> &T {
+        &self.x
     }
-    result
 }
+
+// fn largest<T>(numbers: &[T]) -> T {
+//     let mut result = numbers[0];
+//     for &number in numbers.iter() {
+//         if number > result {
+//             result = number
+//         }
+//     }
+//     result
+// }
 
 fn main() {
-    println!("largest {}", largest_i32(&vec![7, 19, 23, 5]));
-    println!("largest {}", largest_i32(&vec![67, 3, 99, 101]));
-    println!("largest {}", largest_char(&vec!['a', 'z', '&', '~']));
-    println!("largest {}", largest_char(&vec!['x', 'c']));
+    // println!("largest {}", largest(&vec![7, 19, 23, 5]));
+    // println!("largest {}", largest(&vec![67, 3, 99, 101]));
+    // println!("largest {}", largest(&vec!['a', 'z', '&', '~']));
+    // println!("largest {}", largest(&vec!['x', 'c']));
+    let p = Point { x: 42, y: 43 };
+    println!("Point {}", p.x());
 }
