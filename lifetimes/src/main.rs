@@ -1,3 +1,7 @@
+struct ImportantExceprt<'a> {
+    part: &'a str,
+}
+
 fn longest<'a>(a: &'a str, b: &'a str) -> &'a str {
     if a.len() >= b.len() {
         return a;
@@ -6,8 +10,7 @@ fn longest<'a>(a: &'a str, b: &'a str) -> &'a str {
 }
 
 fn main() {
-    let string1 = String::from("one1111");
-    let string2 = String::from("two22222");
-    let result = longest(string1.as_str(), string2.as_str());
-    println!("{:?}", result);
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let first_sentence = novel.split(".").next().expect("oops");
+    let excerpt = ImportantExceprt { part: first_sentence };
 }
