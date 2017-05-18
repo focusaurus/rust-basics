@@ -1,7 +1,7 @@
 struct ImportantExceprt<'a> {
     part: &'a str,
 }
-// force git commit
+// force git commit 2
 fn longest<'a>(a: &'a str, b: &'a str) -> &'a str {
     if a.len() >= b.len() {
         return a;
