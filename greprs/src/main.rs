@@ -4,7 +4,7 @@ use std::io::prelude::*;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let conf = parse_args(&args);
+    let conf = Conf::new(&args);
     println!("{:?}", args);
     println!("Searching for '{}' in file '{}'",
              conf.query,
@@ -16,18 +16,18 @@ fn main() {
     file.read_to_string(&mut contents)
         .expect(format!("error reading file '{}'", conf.input_path).as_str());
     println!("With contents\n{}", contents);
-    // for arg in env::args() {
-    //     println!("{:?}", arg);
-    // }
 }
 
 struct Conf {
     query: String,
     input_path: String,
 }
-fn parse_args(args: &[String]) -> Conf {
-    Conf {
-        query: args[1].clone(),
-        input_path: args[2].clone(),
+
+impl Conf {
+    fn new(args: &[String]) -> Conf {
+        Conf {
+            query: args[1].clone(),
+            input_path: args[2].clone(),
+        }
     }
 }
