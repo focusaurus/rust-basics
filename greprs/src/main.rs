@@ -29,17 +29,29 @@ struct Conf {
     input_path: String,
 }
 
+// impl Conf {
+//     fn new<'a>(args: &'a [String]) -> Result<Conf, &'a str> {
+//         let program = Path::new(&args[0])
+//             .file_name()
+//             .unwrap_or(OsStr::new("greprs"))
+//             .to_str()
+//             .unwrap();
+//         if args.len() < 3 {
+//             let message = format!("Usage: {} <query> <input-path>", program).as_str();
+//             // return Err(message);
+//             // let &'static message  str= format!("Usage: {} <query> <input-path>", program).as_str();
+//             // return Err("Usage: greprs <query> <input-path>");
+//             return Err(message);
+//         }
+//         Ok(Conf {
+//                query: args[1].clone(),
+//                input_path: args[2].clone(),
+//            })
+//     }
+// }
 impl Conf {
     fn new(args: &[String]) -> Result<Conf, &'static str> {
-        let program = Path::new(&args[0])
-            .file_name()
-            .unwrap_or(OsStr::new("greprs"))
-            .to_str()
-            .unwrap();
         if args.len() < 3 {
-            // let &'static message  str= format!("Usage: {} <query> <input-path>", program).as_str();
-            // return Err(message);
-            // let &'static message  str= format!("Usage: {} <query> <input-path>", program).as_str();
             return Err("Usage: greprs <query> <input-path>");
         }
         Ok(Conf {
