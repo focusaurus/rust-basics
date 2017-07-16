@@ -19,10 +19,10 @@ mod tests {
     }
 }
 
-fn format_offset(offset: u32) -> String {
+pub fn format_offset(offset: usize) -> String {
     format!("{:08x}", offset)
 }
 
-fn format_byte(byte: u8) -> String {
+pub fn format_byte(byte: u8) -> String {
     format!("{:02x}", byte)
 }

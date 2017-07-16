@@ -1,5 +1,3 @@
-// use std::ffi::OsStr;
-// use std::path::Path;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;

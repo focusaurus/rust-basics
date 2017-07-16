@@ -1,5 +1,5 @@
 [package]
-name = "hex-dump"
+name = "hex_dump"
 version = "0.1.0"
 authors = ["Peter Lyons <pete@peterlyons.com>"]
 

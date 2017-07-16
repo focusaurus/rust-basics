@@ -1,4 +1,4 @@
 [root]
-name = "hex-dump"
+name = "hex_dump"
 version = "0.1.0"
 
