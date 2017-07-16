@@ -17,6 +17,15 @@ mod tests {
         assert_eq!(format_byte(125), "7d");
         assert_eq!(format_byte(255), "ff");
     }
+
+    #[test]
+    fn test_format_in_place() {
+        assert_eq!(format_in_place(0, 7), "00000000 07");
+        assert_eq!(format_in_place(1, 10), " 0a");
+        assert_eq!(format_in_place(15, 255), " ff");
+        assert_eq!(format_in_place(16, 2), "\n00000010 02");
+        assert_eq!(format_in_place(32, 11), "\n00000020 0b");
+    }
 }
 
 pub fn format_offset(offset: usize) -> String {
@@ -25,4 +34,20 @@ pub fn format_offset(offset: usize) -> String {
 
 pub fn format_byte(byte: u8) -> String {
     format!("{:02x}", byte)
+}
+
+pub fn format_in_place(index: usize, byte: u8) -> String {
+    // interior bytes just need space
+    let mut prefix = String::from(" ");
+    let offset = format_offset(index);
+    if index % 16 == 0 {
+        if index == 0 {
+            // zero we need just offset space
+            prefix = format!("{} ", offset);
+        } else {
+            // other rows we need newline offset space
+            prefix = format!("\n{} ", offset);
+        }
+    }
+    format!("{}{}", prefix, format_byte(byte))
 }
