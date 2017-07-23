@@ -28,14 +28,27 @@ mod tests {
     }
 }
 
+/// Formats a numeric offset with 8 leading zeros
+/// # Examples
+///
+/// `assert_eq!(format_offset(1), "00000001");`
 pub fn format_offset(offset: usize) -> String {
     format!("{:08x}", offset)
 }
 
+/// Formats a single byte in 2 hex digits, lowercase.
+/// # Examples
+///
+/// `assert_eq!(format_byte(125), "7d");`
 pub fn format_byte(byte: u8) -> String {
     format!("{:02x}", byte)
 }
 
+/// Formats a single byte in 2 hex digits, in 16-byte lines.
+/// This handles the offset prefix and trailing newline.
+/// # Examples
+///
+/// `assert_eq!(format_in_place(32, 11), "\n00000020 0b");`
 pub fn format_in_place(index: usize, byte: u8) -> String {
     // interior bytes just need space
     let mut prefix = String::from(" ");
