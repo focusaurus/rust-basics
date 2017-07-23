@@ -13,19 +13,15 @@ fn main() {
         match item {
             (index, Ok(byte)) => {
                 let result = write!(stdout, "{}", hex_dump::format_in_place(index, byte));
-                match result {
-                    Ok(_) => (),
-                    Err(err) => {
-                        let code = match err.kind() {
-                            // This is OK, happens when piped to head
-                            ErrorKind::BrokenPipe => 0,
-                            _ => {
-                                writeln!(stderr, "{}", err).unwrap();
-                                1
-                            }
-                        };
-                        process::exit(code);
+                if let Err(err) = result {
+                    let mut code = 1;
+                    if let ErrorKind::BrokenPipe = err.kind() {
+                        // This is OK, happens when piped to head
+                        code = 0;
+                    } else {
+                        writeln!(stderr, "{}", err).unwrap();
                     }
+                    process::exit(code);
                 }
             }
             (_, Err(err)) => writeln!(stderr, "{}", err).unwrap(),
