@@ -39,21 +39,26 @@ enum List {
 }
 
 use List::{Cons, Nil};
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 #[derive(Debug)]
 struct Node {
     value: i32,
+    parent: RefCell<Weak<Node>>,
     children: RefCell<Vec<Rc<Node>>>,
 }
 
 fn main2() {
     let leaf = Rc::new(Node {
                            value: 3,
+                           parent: RefCell::new(Weak::new()),
                            children: RefCell::new(vec![]),
                        });
     let branch = Rc::new(Node {
                              value: 5,
+                             parent: RefCell::new(Weak::new()),
                              children: RefCell::new(vec![leaf.clone()]),
                          });
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
 }
