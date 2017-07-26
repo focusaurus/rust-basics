@@ -1,0 +1,9 @@
+[package]
+name = "plusser"
+version = "0.1.0"
+authors = ["Peter Lyons <pete@peterlyons.com>"]
+
+[dependencies]
+add-one = { path = "add-one" }
+
+[workspace]
