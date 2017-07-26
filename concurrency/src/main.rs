@@ -13,6 +13,8 @@ fn do_thread() {
 }
 use std::sync::mpsc;
 use std::time::Duration;
+extern crate rand;
+use rand::Rng;
 
 fn do_channel() {
     let (tx, rx) = mpsc::channel();
@@ -25,7 +27,9 @@ fn do_channel() {
                         String::from("thread")];
         for val in vals {
             tx.send(val).unwrap();
-            thread::sleep(Duration::from_secs(1));
+            let duration = rand::thread_rng().gen_range(0, 4);
+            println!("Will sleep {:?}", duration);
+            thread::sleep(Duration::from_secs(duration));
         }
     });
     thread::spawn(move || {
