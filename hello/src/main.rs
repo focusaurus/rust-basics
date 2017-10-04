@@ -18,7 +18,7 @@ fn handle_connection(mut stream: TcpStream) {
     } else if buffer.starts_with(SLEEP) {
         thread::sleep(Duration::from_secs(5));
         (200, "OK", "index.html")
-    }else {
+    } else {
         (400, "Not Found", "404.html")
     };
     let mut file = File::open(file_name).unwrap();
@@ -37,6 +37,6 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
         println!("Client connected");
-        handle_connection(stream.unwrap());
+        thread::spawn(|| { handle_connection(stream.unwrap()); });
     }
 }
