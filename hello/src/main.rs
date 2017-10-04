@@ -1,10 +1,13 @@
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::fs::File;
+use std::thread;
+use std::time::Duration;
 
 static LINE: &'static str = "\r\n";
 // static HTTP: &'static str = "HTTP/1.1";
 static GET: &'static [u8] = b"GET / HTTP/";
+static SLEEP: &'static [u8] = b"GET /sleep HTTP/";
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
@@ -12,7 +15,10 @@ fn handle_connection(mut stream: TcpStream) {
     let mut body = String::new();
     let (status_code, status_text, file_name) = if buffer.starts_with(GET) {
         (200, "OK", "index.html")
-    } else {
+    } else if buffer.starts_with(SLEEP) {
+        thread::sleep(Duration::from_secs(5));
+        (200, "OK", "index.html")
+    }else {
         (400, "Not Found", "404.html")
     };
     let mut file = File::open(file_name).unwrap();
