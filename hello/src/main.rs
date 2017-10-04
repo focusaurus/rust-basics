@@ -3,22 +3,20 @@ use std::net::{TcpListener, TcpStream};
 use std::fs::File;
 
 static LINE: &'static str = "\r\n\r\n";
+static GET: &'static [u8] = b"GET / HTTP/";
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
     stream.read(&mut buffer).unwrap();
-    let get = b"GET / HTTP/";
     let mut contents = String::new();
-    let response;
-    if buffer.starts_with(get) {
-        let mut file = File::open("index.html").unwrap();
-        file.read_to_string(&mut contents).unwrap();
-        response = format!("HTTP/1.1 200 OK{}{}", LINE, contents);
+    let (status, file_name) = if buffer.starts_with(GET) {
+        ("HTTP/1.1 200 OK", "index.html")
     } else {
-        let mut file = File::open("404.html").unwrap();
-        file.read_to_string(&mut contents).unwrap();
-        response = format!("HTTP/1.1 404 Not Found{}{}", LINE, contents);
-    }
+        ("HTTP/1.1 400 Not Found", "404.html")
+    };
+    let mut file = File::open(file_name).unwrap();
+    file.read_to_string(&mut contents).unwrap();
+    let response = format!("{}{}{}", status, LINE, contents);
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
