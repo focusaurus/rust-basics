@@ -1,3 +1,5 @@
+extern crate hello;
+use hello::ThreadPool;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::fs::File;
@@ -35,8 +37,9 @@ fn handle_connection(mut stream: TcpStream) {
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
+    let pool = ThreadPool::new(4);
     for stream in listener.incoming() {
         println!("Client connected");
-        thread::spawn(|| { handle_connection(stream.unwrap()); });
+        pool.execute(|| { handle_connection(stream.unwrap()); });
     }
 }
