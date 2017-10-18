@@ -1,13 +1,11 @@
 extern crate external_traits_lib;
 use external_traits_lib::x::Point as Point;
-use std::fmt::Binary;
-use std::fmt::Error;
-use std::fmt::Formatter;
+use std::fmt;
 
 struct MyPoint (Point);
 
-impl Binary for MyPoint {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+impl fmt::Binary for MyPoint {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "MP: {:b} {:b}", (self.0).0, (self.0).1)
     }
 }
