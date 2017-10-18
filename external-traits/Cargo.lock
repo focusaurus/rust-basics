@@ -1,0 +1,11 @@
+[root]
+name = "external-traits"
+version = "0.1.0"
+dependencies = [
+ "external_traits_lib 0.1.0",
+]
+
+[[package]]
+name = "external_traits_lib"
+version = "0.1.0"
+

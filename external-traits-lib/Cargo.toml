@@ -1,0 +1,6 @@
+[package]
+name = "external_traits_lib"
+version = "0.1.0"
+authors = ["Peter Lyons <pete@peterlyons.com>"]
+
+[dependencies]
