@@ -27,8 +27,10 @@ struct Rectangle {
 }
 
 fn rect_area(rect: Rectangle) -> f32 {
-    let width = rect.p1.x - rect.p2.x;
-    let height = rect.p1.y - rect.p2.y;
+    let (x1, x2) = (rect.p1.x, rect.p2.x);
+    let (y1, y2) = (rect.p1.y, rect.p2.y);
+    let width = x1 - x2;
+    let height = y1 - y2;
     width.abs() * height.abs()
 }
 
