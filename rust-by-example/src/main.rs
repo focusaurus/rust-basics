@@ -34,6 +34,14 @@ fn rect_area(rect: Rectangle) -> f32 {
     width.abs() * height.abs()
 }
 
+fn square(base: Point, side: f32) -> Rectangle {
+    // let {x, y} = base;
+    let (x, y) = (base.x, base.y);
+    Rectangle {
+        p1: base,
+        p2: Point {x: x + side, y: y + side}}
+}
+
 fn main() {
     // Create struct with field init shorthand
     let name = "Peter";
@@ -74,4 +82,5 @@ fn main() {
     println!("pair contains {:?} and {:?}", integer, decimal);
     println!("rectangle {:?}", _rectangle);
     println!("area: {}", rect_area(_rectangle));
+    println!("square: {:?}", square(Point{x:0f32, y:0f32}, 15f32));
 }
