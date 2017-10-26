@@ -1,8 +1,6 @@
 fn main() {
-    println!("Ford Escape
-Ford Escort
-Ford Falcon
-Ford Fiesta
-Ford Focus
-Ford Mustang");
+    let actions = vec!["Escape", "Escort", "Falcon", "Fiesta", "Focus", "Mustang"];
+    for action in actions {
+        println!("Ford {}", action);
+    }
 }
