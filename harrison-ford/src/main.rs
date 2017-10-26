@@ -1,6 +1,6 @@
 fn main() {
-    let actions = vec!["Escape", "Escort", "Falcon", "Fiesta", "Focus", "Mustang"];
-    for action in actions {
+    let actions = ["Escape", "Escort", "Falcon", "Fiesta", "Focus", "Mustang"];
+    for action in actions.iter() {
         println!("Ford {}", action);
     }
 }
