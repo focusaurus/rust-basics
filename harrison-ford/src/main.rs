@@ -1,8 +1,8 @@
 fn main() {
-    println!("Ford Escape");
-    println!("Ford Escort");
-    println!("Ford Falcon");
-    println!("Ford Fiesta");
-    println!("Ford Focus");
-    println!("Ford Mustang");
+    println!("Ford Escape
+Ford Escort
+Ford Falcon
+Ford Fiesta
+Ford Focus
+Ford Mustang");
 }
