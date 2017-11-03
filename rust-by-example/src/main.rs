@@ -1,4 +1,5 @@
 use std::fmt;
+use std::convert;
 
 #[derive(Debug)]
 enum Animal {
@@ -16,13 +17,17 @@ impl fmt::Display for Animal {
                })
     }
 }
-// impl From<Animal> for u8 {
-//     fn from<Animal>(animal: Animal) -> Self {
-//         animal.age
-//     }
-// }
+
+impl convert::From<u8> for Animal {
+    fn from(age: u8) -> Self {
+        Animal::Dog { age }
+    }
+}
+
 
 fn main() {
     let duke = Animal::Dog { age: 1 };
+    let marma: Animal = 34.into();
     println!("{}", duke);
+    println!("{}", marma);
 }
