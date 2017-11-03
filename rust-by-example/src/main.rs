@@ -1,21 +1,28 @@
-// `NanoSecond` is a new name for `u64`.
-type NanoSecond = u64;
-type Inch = u64;
+use std::fmt;
 
-// Use an attribute to silence warning.
-// #[allow(non_camel_case_types)]
-type Hey = u64;
-// TODO ^ Try removing the attribute
+#[derive(Debug)]
+enum Animal {
+    Dog { age: u8 },
+    Cat { age: u8 },
+}
+
+impl fmt::Display for Animal {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,
+               "{}",
+               match self {
+                   &Animal::Dog { age } => format!("Dog<{}>", age),
+                   &Animal::Cat { age } => format!("Cat<{}>", age),
+               })
+    }
+}
+// impl From<Animal> for u8 {
+//     fn from<Animal>(animal: Animal) -> Self {
+//         animal.age
+//     }
+// }
 
 fn main() {
-    // `NanoSecond` = `Inch` = `Hey` = `u64`.
-    let nanoseconds: NanoSecond = 5 as Hey;
-    let inches: Inch = 2 as Hey;
-
-    // Note that type aliases *don't* provide any extra type safety, because
-    // aliases are *not* new types
-    println!("{} nanoseconds + {} inches = {} unit?",
-             nanoseconds,
-             inches,
-             nanoseconds + inches);
+    let duke = Animal::Dog { age: 1 };
+    println!("{}", duke);
 }
