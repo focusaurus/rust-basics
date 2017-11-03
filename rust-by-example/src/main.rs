@@ -24,10 +24,18 @@ impl convert::From<u8> for Animal {
     }
 }
 
+impl convert::From<String> for Animal {
+    fn from(age: String) -> Self {
+        Animal::Dog { age: age.parse::<u8>().unwrap() }
+    }
+}
+
 
 fn main() {
     let duke = Animal::Dog { age: 1 };
     let marma: Animal = 34.into();
+    let lily: Animal = String::from("33").into();
     println!("{}", duke);
     println!("{}", marma);
+    println!("{}", lily);
 }
