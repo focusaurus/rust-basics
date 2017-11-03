@@ -1,86 +1,48 @@
-#[derive(Debug)]
-struct Person<'a> {
-    name: &'a str,
-    age: u8,
+// An attribute to hide warnings for unused code.
+#![allow(dead_code)]
+
+// Create an `enum` to classify a web event. Note how both
+// names and type information together specify the variant:
+// `PageLoad != PageUnload` and `KeyPress(char) != Paste(String)`.
+// Each is different and independent.
+enum WebEvent {
+    // An `enum` may either be `unit-like`,
+    PageLoad,
+    PageUnload,
+    // like tuple structs,
+    KeyPress(char),
+    Paste(String),
+    // or like structures.
+    Click { x: i64, y: i64 },
 }
 
-// A unit struct
-struct Nil;
-
-// A tuple struct
-struct Pair(i32, f32);
-
-// A struct with two fields
-#[derive(Debug)]
-struct Point {
-    x: f32,
-    y: f32,
-}
-
-// Structs can be reused as fields of another struct
-#[allow(dead_code)]
-#[derive(Debug)]
-
-struct Rectangle {
-    p1: Point,
-    p2: Point,
-}
-
-fn rect_area(rect: Rectangle) -> f32 {
-    let (x1, x2) = (rect.p1.x, rect.p2.x);
-    let (y1, y2) = (rect.p1.y, rect.p2.y);
-    let width = x1 - x2;
-    let height = y1 - y2;
-    width.abs() * height.abs()
-}
-
-fn square(base: Point, side: f32) -> Rectangle {
-    // let {x, y} = base;
-    let (x, y) = (base.x, base.y);
-    Rectangle {
-        p1: base,
-        p2: Point {x: x + side, y: y + side}}
+// A function which takes a `WebEvent` enum as an argument and
+// returns nothing.
+fn inspect(event: WebEvent) {
+    match event {
+        WebEvent::PageLoad  => println!("page loaded"),
+        WebEvent::PageUnload => println!("page unloaded"),
+        // Destructure `c` from inside the `enum`.
+        WebEvent::KeyPress(c) => println!("pressed '{}'.", c),
+        WebEvent::Paste(s) => println!("pasted \"{}\".", s),
+        // Destructure `Click` into `x` and `y`.
+        WebEvent::Click { x, y } => {
+            println!("clicked at x={}, y={}.", x, y);
+        },
+    }
 }
 
 fn main() {
-    // Create struct with field init shorthand
-    let name = "Peter";
-    let age = 27;
-    let peter = Person { name, age };
+    let pressed = WebEvent::KeyPress('x');
+    // `to_owned()` creates an owned `String` from a string slice.
+    let pasted  = WebEvent::Paste("my text".to_owned());
+    let click   = WebEvent::Click { x: 20, y: 80 };
+    let load    = WebEvent::PageLoad;
+    let unload  = WebEvent::PageUnload;
 
-    // Print debug struct
-    println!("{:?}", peter);
-
-
-    // Instantiate a `Point`
-    let point: Point = Point { x: 0.3, y: 0.4 };
-
-    // Access the fields of the point
-    println!("point coordinates: ({}, {})", point.x, point.y);
-
-    // Destructure the point using a `let` binding
-    let Point { x: my_x, y: my_y } = point;
-
-    let _rectangle = Rectangle {
-        // struct instantiation is an expression too
-        p1: Point { x: 0.0, y: 0.0 },
-        p2: Point { x: 4.0, y: 2.0},
-    };
-
-    // Instantiate a unit struct
-    let _nil = Nil;
-
-    // Instantiate a tuple struct
-    let pair = Pair(1, 0.1);
-
-    // Access the fields of a tuple struct
-    println!("pair contains {:?} and {:?}", pair.0, pair.1);
-
-    // Destructure a tuple struct
-    let Pair(integer, decimal) = pair;
-
-    println!("pair contains {:?} and {:?}", integer, decimal);
-    println!("rectangle {:?}", _rectangle);
-    println!("area: {}", rect_area(_rectangle));
-    println!("square: {:?}", square(Point{x:0f32, y:0f32}, 15f32));
+    inspect(pressed);
+    inspect(pasted);
+    inspect(click);
+    inspect(load);
+    inspect(unload);
 }
