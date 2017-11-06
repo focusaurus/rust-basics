@@ -4,8 +4,15 @@ fn once<F>(to_call: F) -> bool
     to_call() > 10
 }
 
+fn mutable<F>(mut to_call: F) -> bool where F: FnMut(i32) -> i32 {
+    to_call(2) > 10
+}
+
 fn main() {
-    let input = 7;
-    let my_to_call = || 3;
-    println!("{:?}", once(my_to_call));
+    let to_call_once = || 3;
+    println!("once: {:?}", once(to_call_once));
+    // FnOnce means this would be use after move
+    // to_call_once();
+    let to_call_mut = |value| value * 2;
+    println!("mutable: {:?}", mutable(to_call_mut));
 }
