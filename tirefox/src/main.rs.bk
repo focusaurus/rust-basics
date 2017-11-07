@@ -1,0 +1,13 @@
+// use std::io::{self, BufReader};
+// use std::io::prelude::*;
+// use std::io::Read;
+use std::fs::File;
+
+fn main() {
+let f = File::open("/usr/share/dict/words");
+// let f = BufReader::new(f);
+//
+// for line in f.lines() {
+//     println!("{}", line.unwrap());
+// }
+}
