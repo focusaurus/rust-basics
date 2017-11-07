@@ -25,12 +25,12 @@ pub fn anagrams_for<'a>(base_word: &str, words: &[&str]) -> Vec<&'a str> {
     let hey = words
         .into_iter()
         .filter(|&&word| {
-                    println!("{:?}", normalize(word));
+                    // println!("{:?}", normalize(word));
                     normalize(word) == normal_base
                 })
         .collect::<Vec<&&str>>();
     // let hey = &words.into_iter().filter(|word| word.len() > 0).collect::<Vec<&&str>>();
-    println!("HEY {:?}", normal_base);
+    println!("HEY {:?}", hey);
     vec![]
     // hey
 }
