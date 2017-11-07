@@ -1,15 +1,15 @@
-// use std::io::prelude::*;
-// use std::io::Read;
-// use std::ops::Try;
 use std::fs::File;
 use std::io::BufReader;
+use std::io::prelude::BufRead;
 
 fn main() {
     let words_file = File::open("/usr/share/dict/words").unwrap();
-    println!("{:?}", "hey");
     let words_reader = BufReader::new(words_file);
-    //
-    // for line in f.lines() {
-    //     println!("{}", line.unwrap());
-    // }
+    let mut count = 0;
+
+    for line in words_reader.lines() {
+        count += 1;
+        println!("{}", line.unwrap());
+    }
+    println!("words: {}", count);
 }
