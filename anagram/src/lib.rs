@@ -1,6 +1,6 @@
 use std::iter::FromIterator;
 
-fn normalize(word: String) -> String {
+fn normalize(word: &str) -> String {
     let mut lower_letters: Vec<char> = word.to_lowercase().chars().collect();
     lower_letters.sort();
     String::from_iter(lower_letters)
@@ -17,14 +17,20 @@ fn normalize(word: String) -> String {
 // }
 
 pub fn anagrams_for<'a>(base_word: &str, words: &[&str]) -> Vec<&'a str> {
-    let normal_base = normalize(String::from(base_word));
+    let normal_base = normalize(base_word);
     // words
     //     .iter()
     //     .filter(|&&word| normalize(String::from(word)) == normal_base)
     //     .collect::<Vec<&str>>()
-    // let hey = words.into_iter().filter(|&word| word.len() > 0).collect::<Vec<&&str>>();
-    let hey = words.into_iter().filter(|word| word.len() > 0).collect::<Vec<&&str>>();
-    println!("HEY {:?}", hey);
+    let hey = words
+        .into_iter()
+        .filter(|&&word| {
+                    println!("{:?}", normalize(word));
+                    normalize(word) == normal_base
+                })
+        .collect::<Vec<&&str>>();
+    // let hey = &words.into_iter().filter(|word| word.len() > 0).collect::<Vec<&&str>>();
+    println!("HEY {:?}", normal_base);
     vec![]
     // hey
 }
