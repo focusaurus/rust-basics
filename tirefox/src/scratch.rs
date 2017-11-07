@@ -1,11 +1,11 @@
 // todo get a shuffled iter going with RangeTo etc
+/*
 extern crate rand;
-use shuffled_iter;
+// use shuffled_iter;
 use shuffled_iter::ShuffledIterGen;
 
-use std::iter;
+// use std::iter;
 // use rand::Rng;
-
 pub fn scratch() {
     for word in &["a", "b", "c"] {
         println!("{:?}", word);
@@ -33,6 +33,15 @@ pub fn scratch() {
     }
 */
 
+
+
+
+
+
+
+
+
+
     /* won't compile
     let words = &["a", "b", "c"];
     let si = ShuffledIter::new(10, words);
@@ -40,4 +49,17 @@ pub fn scratch() {
         println!("{:?}", word);
     }
     */
+}
+*/
+
+pub fn scratch() {
+    let mut vec_a: Vec<&str> = vec![];
+    vec_a.push("a");
+    vec_a.push("b");
+    vec_a.push("c");
+    vec_a.push("d");
+    let slice = &vec_a;
+    for value in slice.chunks(2) {
+        println!("{:?}", value);
+    }
 }
