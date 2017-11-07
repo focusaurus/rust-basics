@@ -1,5 +1,4 @@
 use std::iter::FromIterator;
-use std::ops::Deref;
 
 fn normalize(word: &str) -> String {
     let mut lower_letters: Vec<char> = word.to_lowercase().chars().collect();
