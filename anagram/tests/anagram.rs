@@ -8,7 +8,6 @@ fn test_no_matches() {
 }
 
 #[test]
-#[ignore]
 fn test_detect_simple_anagram() {
     let inputs = ["tan", "stand", "at"];
     let outputs: Vec<&str> = vec!["tan"];
@@ -16,7 +15,6 @@ fn test_detect_simple_anagram() {
 }
 
 #[test]
-#[ignore]
 fn test_does_not_confuse_different_duplicates() {
     let inputs = ["eagle"];
     let outputs: Vec<&str> = vec![];
@@ -24,7 +22,6 @@ fn test_does_not_confuse_different_duplicates() {
 }
 
 #[test]
-#[ignore]
 fn test_eliminate_anagram_subsets() {
     let inputs = ["dog", "goody"];
     let outputs: Vec<&str> = vec![];
@@ -32,7 +29,6 @@ fn test_eliminate_anagram_subsets() {
 }
 
 #[test]
-#[ignore]
 fn test_detect_anagram() {
     let inputs = ["enlists", "google", "inlets", "banana"];
     let outputs: Vec<&str> = vec!["inlets"];
