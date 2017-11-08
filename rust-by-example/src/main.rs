@@ -1,37 +1,46 @@
+// `Centimeters`, a tuple struct that can be compared
+#[derive(PartialEq, PartialOrd)]
+struct Centimeters(f64);
+
+// `Inches`, a tuple struct that can be printed
 #[derive(Debug)]
-struct Ecks {
-    pub quantity: usize,
+struct Inches(i32);
+
+impl Inches {
+    fn to_centimeters(&self) -> Centimeters {
+        let &Inches(inches) = self;
+
+        Centimeters(inches as f64 * 2.54)
+    }
 }
 
-fn call_by_imm_value(x: usize) {
-    println!("{:?}", x);
-}
-
-fn call_by_mut_value(mut x: usize) {
-    x += 1;
-    println!("{:?}", x);
-}
-
-fn call_by_imm_ref(x: &Ecks) {
-    println!("call_by_imm_ref {:?}", x);
-}
-
-fn call_by_mut_ref(x: &mut Ecks) {
-    x.quantity += 1;
-    println!("call_by_mut_ref {:?}", x);
-}
+// `Seconds`, a tuple struct no additional attributes
+#[derive(Debug, PartialEq)]
+struct Seconds(i32);
 
 fn main() {
-    let x1 = 1;
-    call_by_imm_value(x1);
-    println!("x1 after {}", x1);
-    let x2 = 20;
-    call_by_mut_value(x2);
-    println!("x2 after {}", x2);
-    let x3 = Ecks { quantity: 30 };
-    call_by_imm_ref(&x3);
-    println!("x3 after {:?}", x3);
-    let mut x4 = Ecks { quantity: 40 };
-    call_by_mut_ref(&mut x4);
-    println!("x3 after {:?}", x4);
+    let _one_second = Seconds(1);
+
+    // Error: `Seconds` can't be printed; it doesn't implement the `Debug` trait
+    println!("One second looks like: {:?}", _one_second);
+    // TODO ^ Try uncommenting this line
+
+    // Error: `Seconds` can't be compared; it doesn't implement the `PartialEq` trait
+    let _this_is_true = (_one_second == _one_second);
+    // TODO ^ Try uncommenting this line
+
+    let foot = Inches(12);
+
+    println!("One foot equals {:?}", foot);
+
+    let meter = Centimeters(100.0);
+
+    let cmp =
+        if foot.to_centimeters() < meter {
+            "smaller"
+        } else {
+            "bigger"
+        };
+
+    println!("One foot is {} than one meter.", cmp);
 }
