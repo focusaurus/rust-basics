@@ -49,6 +49,12 @@ fn sorted_indices(max: usize) -> Vec<usize> {
 //                            .collect::<Vec<&'a str>>();
 // results
 // }
+//
+// fn iter_short_lines(reader: &io::BufReader<fs::File>) -> &std::iter::Filter<> {
+//             reader.lines()
+//             .map(bail_unwrap)
+//             .filter(is_short)
+// }
 
 fn main() {
     // count total words (one per line) in the file
