@@ -1,6 +1,3 @@
-
-// todo generate a pair of random integers
-// todo try shuffled_iter
 extern crate rand;
 extern crate shuffled_iter;
 mod scratch;
