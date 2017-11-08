@@ -1,34 +1,37 @@
-struct Cardinal;
-struct BlueJay;
-struct Turkey;
+#[derive(Debug)]
+struct Ecks {
+    pub quantity: usize,
+}
 
-trait Red {}
-trait Blue {}
+fn call_by_imm_value(x: usize) {
+    println!("{:?}", x);
+}
 
-impl Red for Cardinal {}
-impl Blue for BlueJay {}
+fn call_by_mut_value(mut x: usize) {
+    x += 1;
+    println!("{:?}", x);
+}
 
-// These functions are only valid for types which implement these
-// traits. The fact that the traits are empty is irrelevant.
-fn red<T: Red>(_: &T)   -> &'static str { "red" }
-fn blue<T: Blue>(_: &T) -> &'static str { "blue" }
+fn call_by_imm_ref(x: &Ecks) {
+    println!("call_by_imm_ref {:?}", x);
+}
 
-fn color<T: (Red or Blue)>(bird: &T) -> &'static str {
-    match bird {
-        Red(_) => "red",
-        Blue(_) => "blue",
-    }
+fn call_by_mut_ref(x: &mut Ecks) {
+    x.quantity += 1;
+    println!("call_by_mut_ref {:?}", x);
 }
 
 fn main() {
-    let cardinal = Cardinal;
-    let blue_jay = BlueJay;
-    let _turkey   = Turkey;
-
-    // `red()` won't work on a blue jay nor vice versa
-    // because of the bounds.
-    println!("A cardinal is {}", red(&cardinal));
-    println!("A blue jay is {}", blue(&blue_jay));
-    //println!("A turkey is {}", red(&_turkey));
-    // ^ TODO: Try uncommenting this line.
+    let x1 = 1;
+    call_by_imm_value(x1);
+    println!("x1 after {}", x1);
+    let x2 = 20;
+    call_by_mut_value(x2);
+    println!("x2 after {}", x2);
+    let x3 = Ecks { quantity: 30 };
+    call_by_imm_ref(&x3);
+    println!("x3 after {:?}", x3);
+    let mut x4 = Ecks { quantity: 40 };
+    call_by_mut_ref(&mut x4);
+    println!("x3 after {:?}", x4);
 }
