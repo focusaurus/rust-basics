@@ -9,13 +9,17 @@ use std::fs;
 use std::io;
 use std::io::prelude::*;
 
+const HOW_MANY: usize=  50;
+
 fn main() {
     // scratch::scratch();
-    // let mut source = random::default().seed([48654684, 7686898]);
-    // let mut index = source.read::<usize>();
-    let mut words_file = fs::File::open("/usr/share/dict/words").unwrap();
-    let how_many = 4;
-    let mut words_reader = io::BufReader::new(&words_file);
+    let words_result = fs::File::open("/usr/share/dict/wordsNOPE");
+    if words_result.is_err() {
+        println!("Error {:?}", words_result.err().expect("No err"));
+        std::process::exit(10);
+    }
+    // if let Err(err) = words_result {
+    let words_reader = io::BufReader::new(words_result.unwrap());
     let short_word_count = words_reader
         .lines()
         .map(|result| result.unwrap())
@@ -25,7 +29,7 @@ fn main() {
     let mut chaos = rand::thread_rng();
     let mut indices: Vec<usize> = chaos
         .iter_shuffled(0usize..short_word_count as usize)
-        .take(how_many * 2)
+        .take(HOW_MANY * 2)
         .collect();
     indices.sort();
     // println!("indices: {:?}", indices);
@@ -40,12 +44,11 @@ fn main() {
     let results = &indices
                        .iter()
                        .map(|&index| {
-                                let word = short_word_iter.nth(index - last);
+                                let word = short_word_iter.nth(index - last - 1);
                                 last = index;
                                 word.unwrap()
                             })
                        .collect::<Vec<_>>();
-    let mut first: Option<&str> = None;
     for pair in results.chunks(2) {
         println!("{}{}", pair[0], pair[1]);
     }
