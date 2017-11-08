@@ -1,36 +1,34 @@
-fn once<F>(to_call: F) -> bool
-    where F: FnOnce() -> i32
-{
-    to_call() > 10
-}
+struct Cardinal;
+struct BlueJay;
+struct Turkey;
 
-fn mutable<F>(mut to_call: F) -> bool
-    where F: FnMut(i32) -> i32
-{
-    to_call(2) > 10
-}
+trait Red {}
+trait Blue {}
 
-fn by_ref<F>(to_call: F) -> bool
-    where F: Fn(&i32) -> i32
-{
-    to_call(&2) > 10
-}
+impl Red for Cardinal {}
+impl Blue for BlueJay {}
 
-fn by_ref2(input: &i32) -> i32 {
-    input * 3
+// These functions are only valid for types which implement these
+// traits. The fact that the traits are empty is irrelevant.
+fn red<T: Red>(_: &T)   -> &'static str { "red" }
+fn blue<T: Blue>(_: &T) -> &'static str { "blue" }
+
+fn color<T: (Red or Blue)>(bird: &T) -> &'static str {
+    match bird {
+        Red(_) => "red",
+        Blue(_) => "blue",
+    }
 }
 
 fn main() {
-    let to_call_once = || 3;
-    println!("once: {:?}", once(to_call_once));
-    // FnOnce means this would be use after move
-    // to_call_once();
-    let to_call_mut = |value| value * 2;
-    println!("mutable: {:?}", mutable(to_call_mut));
+    let cardinal = Cardinal;
+    let blue_jay = BlueJay;
+    let _turkey   = Turkey;
 
-    let to_call_ref = |value: &i32| value * 3;
-    println!("by_ref: {:?}", by_ref(by_ref2));
-    println!("by_ref: {:?}", by_ref(to_call_ref));
-    println!("by_ref2: {:?}", by_ref2(&23));
-
+    // `red()` won't work on a blue jay nor vice versa
+    // because of the bounds.
+    println!("A cardinal is {}", red(&cardinal));
+    println!("A blue jay is {}", blue(&blue_jay));
+    //println!("A turkey is {}", red(&_turkey));
+    // ^ TODO: Try uncommenting this line.
 }
