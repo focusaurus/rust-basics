@@ -19,6 +19,9 @@ fn bail(err: std::io::Error) {
     write!(&mut io::stderr(), "{}\n", message);
     std::process::exit(10);
 }
+fn is_short(word: &String) -> bool {
+    word.len() < 7
+}
 
 fn main() {
     // scratch::scratch();
@@ -29,7 +32,7 @@ fn main() {
     let short_word_count = words_reader
         .lines()
         .map(|result| result.map_err(bail).unwrap())
-        .filter(|line| line.len() < 7)
+        .filter(is_short)
         .count();
     // println!("{:?}", short_word_count);
     let mut chaos = rand::thread_rng();
@@ -45,7 +48,7 @@ fn main() {
     let mut short_word_iter = io::BufReader::new(&words_file2)
         .lines()
         .map(|result| result.map_err(bail).unwrap())
-        .filter(|line| line.len() < 7);
+        .filter(is_short);
     let mut last = 0;
     let results = &indices
                        .iter()
