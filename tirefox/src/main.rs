@@ -19,8 +19,13 @@ fn bail(err: std::io::Error) {
     write!(&mut io::stderr(), "{}\n", message);
     std::process::exit(10);
 }
+
 fn is_short(word: &String) -> bool {
     word.len() < 7
+}
+
+fn bail_unwrap(result: Result<String, io::Error>) -> String{
+    result.map_err(bail).unwrap()
 }
 
 fn main() {
@@ -31,7 +36,7 @@ fn main() {
     let words_reader = io::BufReader::new(words_file);
     let short_word_count = words_reader
         .lines()
-        .map(|result| result.map_err(bail).unwrap())
+        .map(bail_unwrap)
         .filter(is_short)
         .count();
     // println!("{:?}", short_word_count);
@@ -47,7 +52,7 @@ fn main() {
     // words_file.seek(io::SeekFrom::Start(0));
     let mut short_word_iter = io::BufReader::new(&words_file2)
         .lines()
-        .map(|result| result.map_err(bail).unwrap())
+        .map(bail_unwrap)
         .filter(is_short);
     let mut last = 0;
     let results = &indices
