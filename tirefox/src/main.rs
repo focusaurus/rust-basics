@@ -8,18 +8,41 @@ use shuffled_iter::ShuffledIterGen;
 use std::fs;
 use std::io;
 use std::io::prelude::*;
+use std::io::ErrorKind;
+use std::io::Write;
+use std::error::Error;
 
-const HOW_MANY: usize=  50;
+const HOW_MANY: usize = 50;
 
 fn main() {
     // scratch::scratch();
-    let words_result = fs::File::open("/usr/share/dict/wordsNOPE");
-    if words_result.is_err() {
-        println!("Error {:?}", words_result.err().expect("No err"));
-        std::process::exit(10);
-    }
+    let words_file = fs::File::open("/usr/share/dict/wordsNOPE")
+        .map_err(|err| {
+            let message = match err.kind() {
+                ErrorKind::NotFound => "Words dictionary file not found",
+                _ => err.description(),
+            };
+            io::stderr().write_fmt(format_args!("{}\n", message));
+            std::process::exit(10);
+            // if let Some(os_err) = err.raw_os_error() {
+            //     let message = match os_err {
+            //         2 => "Words dictionary file not found",
+            //         _ => err.description(),
+            //     };
+            //     println!("Error {:?}", err);
+            //     std::process::exit(10);
+            //
+            //
+            //     println!("raw OS error: {:?}", raw_os_err);
+            // } else {
+            //     println!("Not an OS error");
+            // }
+        })
+        .unwrap();
+    // if words_result.is_err() {
+    // }
     // if let Err(err) = words_result {
-    let words_reader = io::BufReader::new(words_result.unwrap());
+    let words_reader = io::BufReader::new(words_file);
     let short_word_count = words_reader
         .lines()
         .map(|result| result.unwrap())
