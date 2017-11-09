@@ -26,14 +26,18 @@ fn has_line(target_file: &std::fs::File, to_add: &str) -> bool {
         .any(|line| line.unwrap().as_str() == to_add)
 }
 
+fn to_err(message: &str) -> io::Error {
+    io::Error::new(ErrorKind::InvalidData, message)
+}
+
 fn line_in() -> io::Result<i32> {
     let args = env::args().collect::<Vec<String>>();
     if args.len() < 3 {
         let program_name = Path::new(&args[0])
             .file_name()
-            .unwrap()
+            .ok_or(to_err("Invalid Filename"))?
             .to_str()
-            .unwrap();
+            .ok_or(to_err("Filename not valid UTF-8"))?;
 
         error_exit(format!("Usage: {} <target_file> <line_to_add>\n", program_name),
                    1);
@@ -56,5 +60,5 @@ fn line_in() -> io::Result<i32> {
 }
 
 fn main() {
-    line_in().map_err(bail);
+    line_in().map_err(bail).unwrap();
 }
