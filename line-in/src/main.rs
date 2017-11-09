@@ -26,10 +26,8 @@ fn has_line(target_file: &std::fs::File, to_add: &str) -> bool {
         .any(|line| line.unwrap().as_str() == to_add)
 }
 
-fn main() {
-    println!("main4");
+fn line_in() -> io::Result<i32> {
     let args = env::args().collect::<Vec<String>>();
-    println!("args {:?}", args);
     if args.len() < 3 {
         let program_name = Path::new(&args[0])
             .file_name()
@@ -46,13 +44,17 @@ fn main() {
     let target_file = fs::OpenOptions::new()
         .read(true)
         .write(true)
-        .open(&target_path)
-        .unwrap();
+        .open(&target_path)?;
     if !has_line(&target_file, &to_add) {
         let mut writer = io::BufWriter::new(target_file);
-        writer.seek(SeekFrom::End(0));
+        writer.seek(SeekFrom::End(0)).unwrap();
         let to_add = format!("{}\n", &to_add);
-        let wrote = writer.write(&to_add.clone().into_bytes()).unwrap();
-        writer.flush();
+        writer.write(&to_add.clone().into_bytes()).unwrap();
+        writer.flush().unwrap();
     }
+    Ok(0)
+}
+
+fn main() {
+    line_in().map_err(bail);
 }
