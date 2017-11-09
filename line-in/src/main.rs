@@ -1,11 +1,11 @@
 use std::env;
-use std::io;
-use std::io::prelude::*;
-use std::path::Path;
-use std::fs;
-use std::io::ErrorKind;
 use std::error::Error;
+use std::fs;
+use std::io;
+use std::io::ErrorKind;
+use std::io::prelude::*;
 use std::io::SeekFrom;
+use std::path::Path;
 
 fn error_exit(message: String, code: i32) {
     write!(&mut io::stderr(), "{}\n", message).unwrap();
@@ -42,14 +42,17 @@ fn main() {
     }
     let target_path = &args[1];
     let to_add = &args[2];
-    let target_file = fs::File::open(&target_path).map_err(bail).unwrap();
+
+    let target_file = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&target_path)
+        .unwrap();
     if !has_line(&target_file, &to_add) {
-        println!("need to add");
         let mut writer = io::BufWriter::new(target_file);
         writer.seek(SeekFrom::End(0));
-        println!("seeked");
+        let to_add = format!("{}\n", &to_add);
         let wrote = writer.write(&to_add.clone().into_bytes()).unwrap();
-        println!("wrote {:?} bytes", wrote);
         writer.flush();
     }
 }
