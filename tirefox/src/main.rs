@@ -7,6 +7,7 @@ use std::io;
 use std::io::ErrorKind;
 use std::io::prelude::*;
 use std::io::Write;
+use std::iter;
 
 const HOW_MANY: usize = 50;
 const WORDS_PATH: &str = "/usr/share/dict/words";
@@ -38,20 +39,28 @@ fn sorted_indices(max: usize, how_many: Option<usize>) -> Vec<usize> {
     indices
 }
 
+
+fn short_lines<T>(reader: T)
+                  -> iter::Filter<iter::Map<io::Lines<T>, fn(Result<String, io::Error>) -> String>,
+                                  fn(&String) -> bool>
+    where T: io::BufRead
+{
+    reader
+        .lines()
+        .map(bail_unwrap as _)
+        .filter(is_short as _)
+}
+
 fn main() {
     // count total words (one per line) in the file
     let words_file = fs::File::open(WORDS_PATH).map_err(bail).unwrap();
     let words_reader = io::BufReader::new(&words_file);
-    let short_word_count = words_reader
-        .lines()
-        .map(bail_unwrap)
-        .filter(is_short)
-        .count();
+    let short_word_count = short_lines(words_reader).count();
 
     // Prepare the iterator of the words themselves
     let mut reader = io::BufReader::new(&words_file);
     reader.seek(io::SeekFrom::Start(0)).unwrap();
-    let mut short_word_iter = reader.lines().map(bail_unwrap).filter(is_short);
+    let mut short_word_iter = short_lines(reader);
 
     let indices = sorted_indices(short_word_count, Some(HOW_MANY));
     let mut last = 0;

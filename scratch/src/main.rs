@@ -44,7 +44,7 @@ fn short_lines<'a, T>
 
 fn short_lines<T>(reader: T)
                   -> iter::Filter<iter::Map<io::Lines<T>, fn(Result<String, io::Error>) -> String>,
-                                  for<'r> fn(&'r String) -> bool>
+                                  for<> fn(&String) -> bool>
     where T: io::BufRead
 {
     reader.lines().map(unwrap as _).filter(is_short as _)
