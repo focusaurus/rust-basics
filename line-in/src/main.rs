@@ -47,12 +47,13 @@ fn main() {
     }
     let target_path = &args[1];
     let to_add = &args[2];
-    if !has_line(target_path, to_add) {
-        println!("need to add");
-        let mut target_file = fs::File::open(target_path).map_err(bail).unwrap();
-        target_file.seek(SeekFrom::End(0));
-        target_file.write(&to_add.clone().into_bytes()).unwrap();
-    } else {
+    let mut cursor = io::Cursor::new(target_path);
+    if cursor.lines().any(|line| line.unwrap().as_str() == to_add) {
+
         println!("line is already there");
+    } else {
+        println!("need to add");
+        cursor.seek(SeekFrom::End(0));
+        // cursor.write(&to_add.clone().into_bytes()).unwrap();
     }
 }
