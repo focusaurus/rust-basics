@@ -47,10 +47,10 @@ fn line_in() -> io::Result<i32> {
         .open(&target_path)?;
     if !has_line(&target_file, &to_add) {
         let mut writer = io::BufWriter::new(target_file);
-        writer.seek(SeekFrom::End(0)).unwrap();
+        writer.seek(SeekFrom::End(0))?;
         let to_add = format!("{}\n", &to_add);
-        writer.write(&to_add.clone().into_bytes()).unwrap();
-        writer.flush().unwrap();
+        writer.write(&to_add.clone().into_bytes())?;
+        writer.flush()?;
     }
     Ok(0)
 }
