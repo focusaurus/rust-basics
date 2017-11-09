@@ -1,11 +1,8 @@
-fn to_tuple<T>(one: T, two: T) -> [T;2] {
-    [one, two]
-}
-
 fn main (){
-    println!("{:?}", to_tuple(17, 18));
-    println!("{:?}", to_tuple(17.0, 18.2));
-    println!("{:?}", to_tuple(false, true));
-    println!("{:?}", to_tuple("bingo", "bango"));
-    println!("{:?}", to_tuple(-4i8, -10i8));
+    let one = Some(1);
+    let nope: Option<u32> = None;
+    let result = Some(3.14);
+    let whoops: Result<u32, &str> = Err("W H O O P S");
+
+    println!("{:?}", whoops.expect_err("They shouldn't have succeeded"));
 }
