@@ -24,17 +24,30 @@ fn main_works_but_code_dupe() {
     let sample_size = (0.05 * count as f32) as usize; // 5% sample
 
     // This chain of iterator logic is duplicated
-    for line in reader.lines().map(unwrap).filter(is_short).take(sample_size) {
+    for line in reader
+            .lines()
+            .map(unwrap)
+            .filter(is_short)
+            .take(sample_size) {
         println!("{}", line);
     }
 }
-
+/*
 fn short_lines<'a, T>
     (reader: &'a T)
-     -> iter::Filter<std::iter::Map<std::io::Lines<T>, &FnMut(&str, bool)>, &FnMut(&str, bool)>
+     -> iter::Filter<iter::Map<std::io::Lines<T>, &FnMut(&str, bool)>, &FnMut(&str, bool)>
     where T: io::BufRead
 {
     reader.lines().map(unwrap).filter(is_short)
+}
+*/
+
+fn short_lines<T>(reader: T)
+                  -> iter::Filter<iter::Map<io::Lines<T>, fn(Result<String, io::Error>) -> String>,
+                                  for<'r> fn(&'r String) -> bool>
+    where T: io::BufRead
+{
+    reader.lines().map(unwrap as _).filter(is_short as _)
 }
 
 fn main_dry() {
@@ -54,5 +67,5 @@ fn main_dry() {
 
 
 fn main() {
-    main_works_but_code_dupe();
+    main_dry();
 }
