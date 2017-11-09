@@ -20,9 +20,14 @@ fn bail(err: std::io::Error) {
     error_exit(String::from(message), 10);
 }
 
-fn has_line(target_path: &str, to_add: &str) -> bool {
+fn has_line1(target_path: &str, to_add: &str) -> bool {
     let target_file = fs::File::open(target_path).map_err(bail).unwrap();
     io::BufReader::new(&target_file)
+        .lines()
+        .any(|line| line.unwrap().as_str() == to_add)
+}
+fn has_line(target_path: &str, to_add: &str) -> bool {
+    io::Cursor::new(target_path)
         .lines()
         .any(|line| line.unwrap().as_str() == to_add)
 }
