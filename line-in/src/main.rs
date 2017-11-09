@@ -26,6 +26,7 @@ fn has_line1(target_path: &str, to_add: &str) -> bool {
         .lines()
         .any(|line| line.unwrap().as_str() == to_add)
 }
+
 fn has_line(target_path: &str, to_add: &str) -> bool {
     io::Cursor::new(target_path)
         .lines()
@@ -47,13 +48,14 @@ fn main() {
     }
     let target_path = &args[1];
     let to_add = &args[2];
-    let mut cursor = io::Cursor::new(target_path);
-    if cursor.lines().any(|line| line.unwrap().as_str() == to_add) {
-
+    let target_file = fs::File::open(&target_path).map_err(bail).unwrap();
+    let mut reader = io::BufReader::new(&target_file);
+    if reader.lines().any(|line| line.unwrap().as_str() == to_add) {
         println!("line is already there");
     } else {
         println!("need to add");
-        cursor.seek(SeekFrom::End(0));
-        // cursor.write(&to_add.clone().into_bytes()).unwrap();
+        let mut writer = io::BufWriter::new(&target_file);
+        writer.seek(SeekFrom::End(0));
+        writer.write(&to_add.clone().into_bytes()).unwrap();
     }
 }
