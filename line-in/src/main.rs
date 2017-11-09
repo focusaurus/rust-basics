@@ -20,15 +20,8 @@ fn bail(err: std::io::Error) {
     error_exit(String::from(message), 10);
 }
 
-fn has_line1(target_path: &str, to_add: &str) -> bool {
-    let target_file = fs::File::open(target_path).map_err(bail).unwrap();
-    io::BufReader::new(&target_file)
-        .lines()
-        .any(|line| line.unwrap().as_str() == to_add)
-}
-
-fn has_line(target_path: &str, to_add: &str) -> bool {
-    io::Cursor::new(target_path)
+fn has_line(target_file: &std::fs::File, to_add: &str) -> bool {
+    io::BufReader::new(target_file)
         .lines()
         .any(|line| line.unwrap().as_str() == to_add)
 }
@@ -44,15 +37,13 @@ fn main() {
             .to_str()
             .unwrap();
 
-        error_exit(format!("Usage: {} <target_file> <line_to_add>\n", program_name), 1);
+        error_exit(format!("Usage: {} <target_file> <line_to_add>\n", program_name),
+                   1);
     }
     let target_path = &args[1];
     let to_add = &args[2];
     let target_file = fs::File::open(&target_path).map_err(bail).unwrap();
-    let mut reader = io::BufReader::new(&target_file);
-    if reader.lines().any(|line| line.unwrap().as_str() == to_add) {
-        println!("line is already there");
-    } else {
+    if !has_line(&target_file, &to_add) {
         println!("need to add");
         let mut writer = io::BufWriter::new(&target_file);
         writer.seek(SeekFrom::End(0));
