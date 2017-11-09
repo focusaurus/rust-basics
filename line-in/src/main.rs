@@ -45,8 +45,11 @@ fn main() {
     let target_file = fs::File::open(&target_path).map_err(bail).unwrap();
     if !has_line(&target_file, &to_add) {
         println!("need to add");
-        let mut writer = io::BufWriter::new(&target_file);
+        let mut writer = io::BufWriter::new(target_file);
         writer.seek(SeekFrom::End(0));
-        writer.write(&to_add.clone().into_bytes()).unwrap();
+        println!("seeked");
+        let wrote = writer.write(&to_add.clone().into_bytes()).unwrap();
+        println!("wrote {:?} bytes", wrote);
+        writer.flush();
     }
 }
