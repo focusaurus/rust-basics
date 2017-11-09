@@ -1,46 +1,68 @@
-// `Centimeters`, a tuple struct that can be compared
-#[derive(PartialEq, PartialOrd)]
-struct Centimeters(f64);
+struct Fibonacci {
+    curr: usize,
+    next: usize,
+}
 
-// `Inches`, a tuple struct that can be printed
-#[derive(Debug)]
-struct Inches(i32);
+// Implement `Iterator` for `Fibonacci`.
+// The `Iterator` trait only requires a method to be defined for the `next` element.
+impl Iterator for Fibonacci {
+    type Item = usize;
 
-impl Inches {
-    fn to_centimeters(&self) -> Centimeters {
-        let &Inches(inches) = self;
+    // Here, we define the sequence using `.curr` and `.next`.
+    // The return type is `Option<T>`:
+    //     * When the `Iterator` is finished, `None` is returned.
+    //     * Otherwise, the next value is wrapped in `Some` and returned.
+    fn next(&mut self) -> Option<usize> {
+        let new_next = self.curr + self.next;
 
-        Centimeters(inches as f64 * 2.54)
+        self.curr = self.next;
+        self.next = new_next;
+
+        // Since there's no endpoint to a Fibonacci sequence, the `Iterator`
+        // will never return `None`, and `Some` is always returned.
+        Some(self.curr)
     }
 }
 
-// `Seconds`, a tuple struct no additional attributes
-#[derive(Debug, PartialEq)]
-struct Seconds(i32);
+// Returns a Fibonacci sequence generator
+fn fibonacci() -> Fibonacci {
+    Fibonacci { curr: 1, next: 1 }
+}
 
 fn main() {
-    let _one_second = Seconds(1);
+    // `0..3` is an `Iterator` that generates: 0, 1, and 2.
+    let mut sequence = 0..3;
 
-    // Error: `Seconds` can't be printed; it doesn't implement the `Debug` trait
-    println!("One second looks like: {:?}", _one_second);
-    // TODO ^ Try uncommenting this line
+    println!("Four consecutive `next` calls on 0..3");
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
 
-    // Error: `Seconds` can't be compared; it doesn't implement the `PartialEq` trait
-    let _this_is_true = (_one_second == _one_second);
-    // TODO ^ Try uncommenting this line
+    // `for` works through an `Iterator` until it returns `None`.
+    // Each `Some` value is unwrapped and bound to a variable (here, `i`).
+    println!("Iterate through 0..3 using `for`");
+    for i in 0..3 {
+        println!("> {}", i);
+    }
 
-    let foot = Inches(12);
+    // The `take(n)` method reduces an `Iterator` to its first `n` terms.
+    println!("The first four terms of the Fibonacci sequence are: ");
+    for i in fibonacci().take(56) {
+        println!("> {}", i);
+    }
 
-    println!("One foot equals {:?}", foot);
+    // The `skip(n)` method shortens an `Iterator` by dropping its first `n` terms.
+    println!("The next four terms of the Fibonacci sequence are: ");
+    for i in fibonacci().skip(4).take(4) {
+        println!("> {}", i);
+    }
 
-    let meter = Centimeters(100.0);
+    let array = [1u32, 3, 3, 7];
 
-    let cmp =
-        if foot.to_centimeters() < meter {
-            "smaller"
-        } else {
-            "bigger"
-        };
-
-    println!("One foot is {} than one meter.", cmp);
+    // The `iter` method produces an `Iterator` over an array/slice.
+    println!("Iterate the following array {:?}", &array);
+    for i in array.iter() {
+        println!("> {}", i);
+    }
 }
