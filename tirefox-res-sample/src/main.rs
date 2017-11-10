@@ -104,6 +104,7 @@ use rand::Rng;
 
 const HOW_MANY: usize = 20;
 const WORDS_PATH: &str = "/usr/share/dict/words";
+// const WORDS_PATH: &str = "/tmp/words";
 
 fn suitable(word: &str) -> bool {
     word.len() > 2 && word.len() < 8 && word.chars().nth(0).map(char::is_lowercase).unwrap_or(false)
@@ -113,7 +114,7 @@ fn tirefox() -> io::Result<Vec<String>> {
     let words_file = fs::File::open(WORDS_PATH)?;
     let words_reader = io::BufReader::new(&words_file);
     let mut sample = Vec::with_capacity(HOW_MANY);
-    let mut sample_size_m = HOW_MANY;
+    // let mut sample_size_m = HOW_MANY;
     for (index, line_result) in words_reader.lines().enumerate() {
         let word = line_result?;
         if !suitable(&word) {
@@ -123,8 +124,8 @@ fn tirefox() -> io::Result<Vec<String>> {
             // sample is sparse, always fill it initially
             sample.push(word);
         } else {
-            let evictee_M = rand::thread_rng().gen_range(0, index);
-            if evictee_M < sample.len() {
+            let evictee_M = rand::thread_rng().gen_range(0, index + 1);
+            if evictee_M < HOW_MANY {
                 sample[evictee_M] = word;
             }
         }
