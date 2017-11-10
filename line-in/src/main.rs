@@ -6,6 +6,7 @@ use std::io::ErrorKind;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::path::Path;
+use std::ffi::OsStr;
 
 fn error_exit(message: String, code: i32) {
     eprintln!("{}", message);
@@ -33,14 +34,11 @@ fn to_err(message: &str) -> io::Error {
 fn line_in() -> io::Result<i32> {
     let args = env::args().collect::<Vec<String>>();
     if args.len() < 3 {
-        let program_name = Path::new(&args[0])
-            .file_name()
-            .ok_or(to_err("Invalid Filename"))?
-            // todo look at to_string_lossy
-            // .to_string_lossy()
-            .to_str()
-            .ok_or(to_err("Filename not valid UTF-8"))?;
-
+        let program_name = args.first()
+            .map(Path::new)
+            .and_then(Path::file_name)
+            .map(|o| o.to_string_lossy().into_owned())
+            .unwrap_or_else(||"UNKNOWN".to_string());
         error_exit(format!("Usage: {} <target_file> <line_to_add>\n", program_name),
                    1);
     }
