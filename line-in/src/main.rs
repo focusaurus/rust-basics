@@ -8,7 +8,7 @@ use std::io::SeekFrom;
 use std::path::Path;
 
 fn error_exit(message: String, code: i32) {
-    write!(&mut io::stderr(), "{}\n", message).unwrap();
+    eprintln!("{}", message);
     std::process::exit(code);
 }
 

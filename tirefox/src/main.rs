@@ -13,11 +13,10 @@ const HOW_MANY: usize = 50;
 const WORDS_PATH: &str = "/usr/share/dict/words";
 
 fn bail(err: std::io::Error) {
-    let message = match err.kind() {
+    eprintln!("{}", match err.kind() {
         ErrorKind::NotFound => "Words dictionary file not found",
         _ => err.description(),
-    };
-    write!(&mut io::stderr(), "{}\n", message).unwrap();
+    });
     std::process::exit(10);
 }
 

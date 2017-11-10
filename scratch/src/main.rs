@@ -1,23 +1,19 @@
 use std::thread;
 
-const data: &str = "86967897737416471853297327050364959
-11861322575564723963297542624962850
-70856234701860851907960690014725639
-38397966707106094172783238747669219
-52380795257888236525459303330302837
-58495327135744041048897885734297812
-69920216438980873548808413720956532
-16278424637452589860345374828574668";
-
 fn main() {
-    let char_vec = data.chars()
-            .filter(|c| c.is_numeric())
-            .collect::<Vec<char>>();
-    for (i, chunk) in char_vec.chunks(data.len() / 8).enumerate() {
+    let input = "12 34 56 78"; // stack, str slice
+    let char_vec = input
+        .chars() // stack, lazy iterator over chars
+        .filter(|c| c.is_numeric()) // stack, intermediate code/supporting data
+        .collect::<Vec<char>>(); // stack, we now have a copy of a subset of `input`
+    for (i, chunk) in char_vec.chunks(input.len() / 4).enumerate() {
+        // About to throw a var into a move closure in a child thread
+        // compiler can't check that parent will outlive child (?)
+        // and also maybe data race checks are hard?
+        // so we have to make this a move not a borrow
         let you_gotta_move_this_your_doing_fine = chunk.to_owned();
-        thread::spawn(move || -> u32 {
+        thread::spawn(move || -> () {
                           println!("{:?}", you_gotta_move_this_your_doing_fine);
-                          i as u32
                       });
     }
 }

@@ -6,5 +6,6 @@ authors = ["Peter Lyons <pete@peterlyons.com>"]
 [dependencies]
 
 [[bin]]
-name = "main"
+name = "hexdump"
+path = "src/main.rs"
 doc = false

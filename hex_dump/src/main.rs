@@ -1,14 +1,11 @@
 extern crate hex_dump;
 
 use std::io;
-use std::io::Read;
-use std::io::Write;
-use std::io::ErrorKind;
+use std::io::{ErrorKind,Read,Write};
 
 fn main() {
     use std::process;
     let mut stdout = io::stdout();
-    let mut stderr = io::stderr();
     for item in io::stdin().bytes().enumerate() {
         match item {
             (index, Ok(byte)) => {
@@ -19,12 +16,12 @@ fn main() {
                         // This is OK, happens when piped to head
                         code = 0;
                     } else {
-                        writeln!(stderr, "{}", err).unwrap();
+                        eprintln!("{}", err);
                     }
                     process::exit(code);
                 }
             }
-            (_, Err(err)) => writeln!(stderr, "{}", err).unwrap(),
+            (_, Err(err)) => eprintln!("{}", err),
         }
     }
 }
