@@ -1,6 +1,6 @@
 use std::thread;
 
-const THREAD_COUNT: u8 = 8;
+const THREAD_COUNT: usize = 8;
 
 // This is the `main` thread
 fn main() {
@@ -25,18 +25,11 @@ fn main() {
      *
      * Divide our data into segments, and apply initial processing
      ************************************************************************/
-    let chunk_size = data.len() / 8;
-    let chars = data.chars();
-    let numchars = chars.filter(|c|c.is_numeric());
-    let vec_chars = numchars.collect::<Vec<char>>();
-    // let vec_owned = vec_chars.iter().map(|c|c.to_owned()).collect::<Vec<char>>();
     let vec_owned = data.chars()
         .filter(|c| c.is_numeric())
         .map(|c| c.to_owned())
         .collect::<Vec<char>>();
-        // .chunks(chunk_size);
-    for (i, chunk) in vec_owned.chunks(chunk_size).enumerate() {
-    // for (i, chunk) in vec_owned.chunks(chunk_size).enumerate() {
+    for (i, chunk) in vec_owned.chunks(data.len() / THREAD_COUNT).enumerate() {
 
         // Process each data segment in a separate thread
         //
