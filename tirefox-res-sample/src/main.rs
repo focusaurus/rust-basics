@@ -102,7 +102,7 @@ use std::{fs, io};
 use std::io::prelude::*;
 use rand::Rng;
 
-const HOW_MANY: usize = 50;
+const HOW_MANY: usize = 20;
 const WORDS_PATH: &str = "/usr/share/dict/words";
 
 fn suitable(word: &str) -> bool {
@@ -110,16 +110,13 @@ fn suitable(word: &str) -> bool {
 }
 
 fn tirefox() -> io::Result<Vec<String>> {
-    //
     let words_file = fs::File::open(WORDS_PATH)?;
     let words_reader = io::BufReader::new(&words_file);
     let mut sample = Vec::with_capacity(HOW_MANY);
     let mut sample_size_m = HOW_MANY;
     for (index, line_result) in words_reader.lines().enumerate() {
-        // .filter(|w|w.len() < 7) {
         let word = line_result?;
         if !suitable(&word) {
-            // Not a good size, skip this word
             continue;
         }
         if sample.len() < HOW_MANY {
