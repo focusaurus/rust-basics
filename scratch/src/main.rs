@@ -1,4 +1,5 @@
 use std::thread;
+
 const data: &str = "86967897737416471853297327050364959
 11861322575564723963297542624962850
 70856234701860851907960690014725639
@@ -13,23 +14,10 @@ fn main() {
             .filter(|c| c.is_numeric())
             .collect::<Vec<char>>();
     for (i, chunk) in char_vec.chunks(data.len() / 8).enumerate() {
+        let you_gotta_move_this_your_doing_fine = chunk.to_owned();
         thread::spawn(move || -> u32 {
-                          println!("{:?}", chunk);
+                          println!("{:?}", you_gotta_move_this_your_doing_fine);
                           i as u32
                       });
     }
 }
-/*
-fn main2() {
-    let numeric = data.chars().filter(|c| c.is_numeric());
-    for (i, chunk) in numeric
-            .collect::<Vec<char>>()
-            .chunks(data.len() / 8)
-            .enumerate() {
-        thread::spawn(move || -> u32 {
-                          println!("{:?}", chunk);
-                          0
-                      });
-    }
-}
-*/

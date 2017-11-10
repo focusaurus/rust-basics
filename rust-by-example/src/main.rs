@@ -27,7 +27,6 @@ fn main() {
      ************************************************************************/
     let vec_owned = data.chars()
         .filter(|c| c.is_numeric())
-        .map(|c| c.to_owned())
         .collect::<Vec<char>>();
     for (i, chunk) in vec_owned.chunks(data.len() / THREAD_COUNT).enumerate() {
 
