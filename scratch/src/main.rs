@@ -1,71 +1,35 @@
-use std::fs;
-use std::io;
-use std::io::prelude::*;
-use std::iter;
+use std::thread;
+const data: &str = "86967897737416471853297327050364959
+11861322575564723963297542624962850
+70856234701860851907960690014725639
+38397966707106094172783238747669219
+52380795257888236525459303330302837
+58495327135744041048897885734297812
+69920216438980873548808413720956532
+16278424637452589860345374828574668";
 
-const WORDS_PATH: &str = "/usr/share/dict/words";
-
-fn is_short(word: &String) -> bool {
-    word.len() < 7
-}
-
-fn unwrap(result: Result<String, io::Error>) -> String {
-    result.unwrap()
-}
-
-fn main_works_but_code_dupe() {
-    let file = fs::File::open(WORDS_PATH).unwrap();
-    let reader = io::BufReader::new(&file);
-    let count = reader.lines().map(unwrap).filter(is_short).count();
-    println!("{:?}", count);
-
-    let mut reader = io::BufReader::new(&file);
-    reader.seek(io::SeekFrom::Start(0));
-    let sample_size = (0.05 * count as f32) as usize; // 5% sample
-
-    // This chain of iterator logic is duplicated
-    for line in reader
-            .lines()
-            .map(unwrap)
-            .filter(is_short)
-            .take(sample_size) {
-        println!("{}", line);
+fn main() {
+    let char_vec = data.chars()
+            .filter(|c| c.is_numeric())
+            .collect::<Vec<char>>();
+    for (i, chunk) in char_vec.chunks(data.len() / 8).enumerate() {
+        thread::spawn(move || -> u32 {
+                          println!("{:?}", chunk);
+                          i as u32
+                      });
     }
 }
 /*
-fn short_lines<'a, T>
-    (reader: &'a T)
-     -> iter::Filter<iter::Map<std::io::Lines<T>, &FnMut(&str, bool)>, &FnMut(&str, bool)>
-    where T: io::BufRead
-{
-    reader.lines().map(unwrap).filter(is_short)
-}
-*/
-
-fn short_lines<T>(reader: T)
-                  -> iter::Filter<iter::Map<io::Lines<T>, fn(Result<String, io::Error>) -> String>,
-                                  for<> fn(&String) -> bool>
-    where T: io::BufRead
-{
-    reader.lines().map(unwrap as _).filter(is_short as _)
-}
-
-fn main_dry() {
-    let file = fs::File::open(WORDS_PATH).unwrap();
-    let reader = io::BufReader::new(&file);
-    let count = short_lines(reader).count();
-    println!("{:?}", count);
-
-    // Would like to do this instead:
-    let mut reader = io::BufReader::new(&file);
-    reader.seek(io::SeekFrom::Start(0));
-    let sample_size = (0.05 * count as f32) as usize; // 5% sample
-    for line in short_lines(reader).take(sample_size) {
-        println!("{}", line);
+fn main2() {
+    let numeric = data.chars().filter(|c| c.is_numeric());
+    for (i, chunk) in numeric
+            .collect::<Vec<char>>()
+            .chunks(data.len() / 8)
+            .enumerate() {
+        thread::spawn(move || -> u32 {
+                          println!("{:?}", chunk);
+                          0
+                      });
     }
 }
-
-
-fn main() {
-    main_dry();
-}
+*/

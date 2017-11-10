@@ -1,8 +1,96 @@
-fn main (){
-    let one = Some(1);
-    let nope: Option<u32> = None;
-    let result = Some(3.14);
-    let whoops: Result<u32, &str> = Err("W H O O P S");
+use std::thread;
 
-    println!("{:?}", whoops.expect_err("They shouldn't have succeeded"));
+const THREAD_COUNT: u8 = 8;
+
+// This is the `main` thread
+fn main() {
+
+    // This is our data to process.
+    // We will calculate the sum of all digits via a threaded  map-reduce algorithm.
+    // Each whitespace separated chunk will be handled in a different thread.
+    //
+    // TODO: see what happens to the output if you insert spaces!
+    let data = "86967897737416471853297327050364959
+11861322575564723963297542624962850
+70856234701860851907960690014725639
+38397966707106094172783238747669219
+52380795257888236525459303330302837
+58495327135744041048897885734297812
+69920216438980873548808413720956532
+16278424637452589860345374828574668";
+    // Make a vector to hold the child-threads which we will spawn.
+    let mut children = vec![];
+    /*************************************************************************
+     * "Map" phase
+     *
+     * Divide our data into segments, and apply initial processing
+     ************************************************************************/
+    let chunk_size = data.len() / 8;
+    let chars = data.chars();
+    let numchars = chars.filter(|c|c.is_numeric());
+    let vec_chars = numchars.collect::<Vec<char>>();
+    // let vec_owned = vec_chars.iter().map(|c|c.to_owned()).collect::<Vec<char>>();
+    let vec_owned = data.chars()
+        .filter(|c| c.is_numeric())
+        .map(|c| c.to_owned())
+        .collect::<Vec<char>>();
+        // .chunks(chunk_size);
+    for (i, chunk) in vec_owned.chunks(chunk_size).enumerate() {
+    // for (i, chunk) in vec_owned.chunks(chunk_size).enumerate() {
+
+        // Process each data segment in a separate thread
+        //
+        // spawn() returns a handle to the new thread,
+        // which we MUST keep to access the returned value
+        //
+        // 'move || -> u32' is syntax for a closure that:
+        // * takes no arguments ('||')
+        // * takes ownership of its captured variables ('move') and
+        // * returns an unsigned 32-bit integer ('-> u32')
+        //
+        // Rust is smart enough to infer the '-> u32' from
+        // the closure itself so we could have left that out.
+        //
+        // TODO: try removing the 'move' and see what happens
+        let chunk_for_other_thread = chunk.to_owned();
+        children.push(thread::spawn(move || -> u32 {
+            // Calculate the intermediate sum of this segment:
+            let result = chunk_for_other_thread.into_iter()
+                        // iterate over the characters of our segment..
+                        // .. convert text-characters to their number value..
+                        .map(|c| c.to_digit(10).expect("should be a digit"))
+                        // .. and sum the resulting iterator of numbers
+                        .sum();
+
+            // println! locks stdout, so no text-interleaving occurs
+            println!("processed segment {}, result={}", i, result);
+
+            // "return" not needed, because Rust is an "expression language", the
+            // last evaluated expression in each block is automatically its value.
+            result
+        }));
+    }
+
+
+    /*************************************************************************
+     * "Reduce" phase
+     *
+     * Collect our intermediate results, and combine them into a final result
+     ************************************************************************/
+
+    // collect each thread's intermediate results into a new Vec
+    let mut intermediate_sums = vec![];
+    for child in children {
+        // collect each child thread's return-value
+        let intermediate_sum = child.join().unwrap();
+        intermediate_sums.push(intermediate_sum);
+    }
+
+    // combine all intermediate sums into a single final sum.
+    //
+    // we use the "turbofish" ::<> to provide sum() with a type hint.
+    //
+    let final_result: u32 = intermediate_sums.iter().sum();
+
+    println!("Final sum result: {}", final_result);
 }

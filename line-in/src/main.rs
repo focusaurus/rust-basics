@@ -36,6 +36,8 @@ fn line_in() -> io::Result<i32> {
         let program_name = Path::new(&args[0])
             .file_name()
             .ok_or(to_err("Invalid Filename"))?
+            // todo look at to_string_lossy
+            // .to_string_lossy()
             .to_str()
             .ok_or(to_err("Filename not valid UTF-8"))?;
 
@@ -52,9 +54,8 @@ fn line_in() -> io::Result<i32> {
     if !has_line(&target_file, &to_add) {
         let mut writer = io::BufWriter::new(target_file);
         writer.seek(SeekFrom::End(0))?;
-        let to_add = format!("{}\n", &to_add);
-        writer.write(&to_add.clone().into_bytes())?;
-        writer.flush()?;
+        writeln!(writer, "{}", &to_add);
+        writer.flush()? // possibly unnecessary???
     }
     Ok(0)
 }

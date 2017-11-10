@@ -39,7 +39,27 @@ fn sorted_indices(max: usize, how_many: Option<usize>) -> Vec<usize> {
     indices
 }
 
+fn foo() -> &'static io::BufRead{
+    panic!()
+}
 
+// String
+// &str    // string slice
+// &String
+
+// Vec<u8>
+// &[u8]
+/*
+fn fib<'a>(n: u64) -> &'a [u64] {
+    unimplemented!()
+}
+
+fn short_lines_boxed<R>(reader: R) -> impl iter::Iterator<Item=io::Result<String>>
+    where R: io::BufRead
+{
+    unimplemented!()
+}
+*/
 fn short_lines<T>(reader: T)
                   -> iter::Filter<iter::Map<io::Lines<T>, fn(Result<String, io::Error>) -> String>,
                                   fn(&String) -> bool>
