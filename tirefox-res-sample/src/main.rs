@@ -9,6 +9,9 @@ use std::io::prelude::*;
 const WORDS_PATH: &str = "/usr/share/dict/words";
 
 fn suitable(word: &str) -> bool {
+    // not too short
+    // not too long
+    // not a capitalized proper name
     word.len() > 2 && word.len() < 8 &&
     word.chars()
         .nth(0)
@@ -34,7 +37,9 @@ fn tirefox() -> io::Result<Vec<String>> {
         .get_matches();
     let words_file = fs::File::open(matches.value_of("words_path").unwrap_or(WORDS_PATH))?;
     let words_reader = io::BufReader::new(&words_file);
-    let how_many = value_t!(matches, "count", usize).unwrap_or(10) * 2;
+    let how_many = value_t!(matches, "count", usize)
+        .map_err(|e| e.exit())
+        .unwrap() * 2;
     let mut sample = Vec::with_capacity(how_many);
     for (index, line_result) in words_reader.lines().enumerate() {
         let word = line_result?;
@@ -56,11 +61,14 @@ fn tirefox() -> io::Result<Vec<String>> {
 
 fn main() {
     match tirefox() {
+        Err(error) => {
+            eprintln!("{}", error);
+            std::process::exit(1);
+        }
         Ok(sample) => {
             for pair in sample.chunks(2) {
                 println!("{}{}", pair[0], pair[1]);
             }
         }
-        Err(e) => eprintln!("{}", e),
     }
 }
