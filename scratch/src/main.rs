@@ -1,4 +1,4 @@
-#[macro_use]
+/*#[macro_use]
 extern crate clap;
 
 use clap::{Arg, App};
@@ -46,6 +46,35 @@ fn main() {
         // Err(ref error) => error.exit(),
         Err<io::Error>(ioe) => {
             eprintln!("{}", ioe.description())
+        }
+    }
+}
+*/
+use std::{io, fs, process, result};
+
+fn get_option() -> Option<u32> {
+    None
+    // Some(25)
+}
+
+fn scratch() -> Result<(), String> {
+    let x = fs::File::open("/tmp/input").map_err(|e|"open error".to_string())?;
+    let option = get_option().ok_or("option error")? ;
+    println!("option {:?}", option);
+    fs::rename("/tmp/a.txt", "/tmp/b.txt").map_err(|e|"rename err".to_string())?;
+    // Err(14)
+    // Err("crap".to_string())
+    Ok(())
+}
+
+fn main() {
+    match scratch() {
+        Ok(file) => {
+            println!("scratch OK");
+        }
+        Err(error) => {
+            eprintln!("exiting {}", error);
+            process::exit(1);
         }
     }
 }
