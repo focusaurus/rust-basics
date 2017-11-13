@@ -4,6 +4,7 @@ extern crate rand;
 use clap::{Arg, App};
 use rand::Rng;
 use std::{fs, io};
+use std::io::ErrorKind;
 use std::io::prelude::*;
 
 const WORDS_PATH: &str = "/usr/share/dict/words";
@@ -36,6 +37,7 @@ fn tirefox() -> io::Result<Vec<String>> {
                  .help("How many words to generate"))
         .get_matches();
     let words_file = fs::File::open(matches.value_of("words_path").unwrap_or(WORDS_PATH))?;
+    // words_file.map_err(|e| io::Error::new(e.kind(), format!("Unable to read words file: {}", e)))?;
     let words_reader = io::BufReader::new(&words_file);
     let how_many = value_t!(matches, "count", usize)
         .map_err(|e| e.exit())
@@ -62,8 +64,14 @@ fn tirefox() -> io::Result<Vec<String>> {
 fn main() {
     match tirefox() {
         Err(error) => {
-            eprintln!("{}", error);
-            std::process::exit(1);
+            let message = match (error.kind()) {
+                ErrorKind::NotFound => "Words file not found",
+                ErrorKind::PermissionDenied => "Words file not readable",
+                _ => "Unexpected IO error reading words file",
+
+            };
+            eprintln!("{}", message);
+            std::process::exit(10);
         }
         Ok(sample) => {
             for pair in sample.chunks(2) {
