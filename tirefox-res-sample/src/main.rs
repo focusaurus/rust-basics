@@ -64,7 +64,7 @@ fn tirefox() -> io::Result<Vec<String>> {
 fn main() {
     match tirefox() {
         Err(error) => {
-            let message = match (error.kind()) {
+            let message = match error.kind() {
                 ErrorKind::NotFound => "Words file not found",
                 ErrorKind::PermissionDenied => "Words file not readable",
                 _ => "Unexpected IO error reading words file",
