@@ -33,7 +33,7 @@ fn line_in() -> Result<(), String> {
         .read(true)
         .write(true)
         .open(&target_path)
-        .map_err(|e| format!("Error reading target file: {}", e))?;
+        .map_err(|e| format!("Error opening target file: {}", e))?;
     if !has_line(&target_file, &to_add) {
         let mut writer = io::BufWriter::new(target_file);
         writer
