@@ -1,8 +1,0 @@
-[package]
-name = "tirefox-res-sample"
-version = "0.1.0"
-authors = ["Peter Lyons <pete@peterlyons.com>"]
-
-[dependencies]
-rand = "0.3.18"                 # Random number generators and other randomness functionality.
-clap = "2.27.1"

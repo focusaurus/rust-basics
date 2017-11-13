@@ -1,97 +1,82 @@
+#[macro_use]
+extern crate clap;
 extern crate rand;
-extern crate shuffled_iter;
-use shuffled_iter::ShuffledIterGen;
-use std::error::Error;
-use std::fs;
-use std::io;
+use clap::{Arg, App};
+use rand::Rng;
+use std::{fs, io};
 use std::io::ErrorKind;
 use std::io::prelude::*;
-use std::io::Write;
-use std::iter;
 
-const HOW_MANY: usize = 50;
 const WORDS_PATH: &str = "/usr/share/dict/words";
 
-fn bail(err: std::io::Error) {
-    eprintln!("{}", match err.kind() {
-        ErrorKind::NotFound => "Words dictionary file not found",
-        _ => err.description(),
-    });
-    std::process::exit(10);
+fn suitable(word: &str) -> bool {
+    // not too short
+    // not too long
+    // not a capitalized proper name
+    word.len() > 2 && word.len() < 8 &&
+    word.chars()
+        .nth(0)
+        .map(char::is_lowercase)
+        .unwrap_or(false)
 }
 
-fn is_short(word: &String) -> bool {
-    word.len() < 7
-}
-
-fn bail_unwrap(result: Result<String, io::Error>) -> String {
-    result.map_err(bail).unwrap()
-}
-
-fn sorted_indices(max: usize, how_many: Option<usize>) -> Vec<usize> {
-    let mut chaos = rand::thread_rng();
-    let mut indices: Vec<usize> = chaos
-        .iter_shuffled(0usize..max as usize)
-        .take(how_many.unwrap_or(50) * 2)
-        .collect();
-    indices.sort();
-    indices
-}
-
-fn foo() -> &'static io::BufRead{
-    panic!()
-}
-
-/*
-fn fib<'a>(n: u64) -> &'a [u64] {
-    unimplemented!()
-}
-
-fn short_lines_boxed<R>(reader: R) -> impl iter::Iterator<Item=io::Result<String>>
-    where R: io::BufRead
-{
-    unimplemented!()
-}
-*/
-fn short_lines<T>(reader: T)
-                  -> iter::Filter<iter::Map<io::Lines<T>, fn(Result<String, io::Error>) -> String>,
-                                  fn(&String) -> bool>
-    where T: io::BufRead
-{
-    reader
-        .lines()
-        .map(bail_unwrap as _)
-        .filter(is_short as _)
-}
-
-fn tirefox() -> io::Result<i32> {
-    // count total words (one per line) in the file
-    let words_file = fs::File::open(WORDS_PATH)?;
+fn tirefox() -> io::Result<Vec<String>> {
+    let matches = App::new("tirefox")
+        .version(crate_version!())
+        .about("Generate ellisions of random short words")
+        .arg(Arg::with_name("words_path")
+                 .short("w")
+                 .long("words")
+                 .takes_value(true)
+                 // .with_default("/usr/share/dict/words")
+                 .help("Word dictionary path. One word per line."))
+        .arg(Arg::with_name("count")
+                 .short("c")
+                 .long("count")
+                 .takes_value(true)
+                 .help("How many words to generate"))
+        .get_matches();
+    let words_file = fs::File::open(matches.value_of("words_path").unwrap_or(WORDS_PATH))?;
+    // words_file.map_err(|e| io::Error::new(e.kind(), format!("Unable to read words file: {}", e)))?;
     let words_reader = io::BufReader::new(&words_file);
-    let short_word_count = short_lines(words_reader).count();
-
-    // Prepare the iterator of the words themselves
-    let mut reader = io::BufReader::new(&words_file);
-    reader.seek(io::SeekFrom::Start(0))?;
-    let mut short_word_iter = short_lines(reader);
-
-    let indices = sorted_indices(short_word_count, Some(HOW_MANY));
-    let mut last = 0;
-    let results = &indices
-                       .iter()
-                       .map(|&index| {
-                                let word = short_word_iter.nth(index - last - 1).unwrap();
-                                last = index;
-                                word
-                            })
-                        // .ok_or(io::Error::new(io::ErrorKind::Other, "index error"))?
-                       .collect::<Vec<_>>();
-    for pair in results.chunks(2) {
-        println!("{}{}", pair[0], pair[1]);
+    let how_many = value_t!(matches, "count", usize)
+        .map_err(|e| e.exit())
+        .unwrap() * 2;
+    let mut sample = Vec::with_capacity(how_many);
+    for (index, line_result) in words_reader.lines().enumerate() {
+        let word = line_result?;
+        if !suitable(&word) {
+            continue;
+        }
+        if sample.len() < how_many {
+            // sample is sparse, always fill it initially
+            sample.push(word);
+        } else {
+            let index_to_replace = rand::thread_rng().gen_range(0, index + 1);
+            if index_to_replace < how_many {
+                sample[index_to_replace] = word;
+            }
+        }
     }
-    Ok(0)
+    Ok(sample)
 }
 
 fn main() {
-    tirefox().map_err(bail);
+    match tirefox() {
+        Err(error) => {
+            let message = match error.kind() {
+                ErrorKind::NotFound => "Words file not found",
+                ErrorKind::PermissionDenied => "Words file not readable",
+                _ => "Unexpected IO error reading words file",
+
+            };
+            eprintln!("{}", message);
+            std::process::exit(10);
+        }
+        Ok(sample) => {
+            for pair in sample.chunks(2) {
+                println!("{}{}", pair[0], pair[1]);
+            }
+        }
+    }
 }
