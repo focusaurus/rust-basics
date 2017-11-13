@@ -34,7 +34,7 @@ fn tirefox() -> io::Result<Vec<String>> {
         .get_matches();
     let words_file = fs::File::open(matches.value_of("words_path").unwrap_or(WORDS_PATH))?;
     let words_reader = io::BufReader::new(&words_file);
-    let mut how_many = value_t!(matches, "count", usize).unwrap_or(10) * 2;
+    let how_many = value_t!(matches, "count", usize).unwrap_or(10) * 2;
     let mut sample = Vec::with_capacity(how_many);
     for (index, line_result) in words_reader.lines().enumerate() {
         let word = line_result?;
@@ -45,9 +45,9 @@ fn tirefox() -> io::Result<Vec<String>> {
             // sample is sparse, always fill it initially
             sample.push(word);
         } else {
-            let evictee_M = rand::thread_rng().gen_range(0, index + 1);
-            if evictee_M < how_many {
-                sample[evictee_M] = word;
+            let index_to_replace = rand::thread_rng().gen_range(0, index + 1);
+            if index_to_replace < how_many {
+                sample[index_to_replace] = word;
             }
         }
     }
