@@ -1,0 +1,8 @@
+[package]
+name = "rustblock"
+version = "0.1.0"
+authors = ["Peter Lyons <pete@peterlyons.com>"]
+
+[dependencies]
+byte_sha = "1.0.1"
+hex-slice = "0.1.2"

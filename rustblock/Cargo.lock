@@ -1,0 +1,30 @@
+[root]
+name = "rustblock"
+version = "0.1.0"
+dependencies = [
+ "byte_sha 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hex-slice 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "byte_sha"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "hex_d_hex 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "hex-slice"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "hex_d_hex"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[metadata]
+"checksum byte_sha 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "17de13115ee4f964a0e34b12565f7c6e9f27c375037ec2b22996b3a430bf04f2"
+"checksum hex-slice 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "839068f4e2a7e9dc421aac6b8a4bfe022c56124b8ab57e43aad019143fa0a7e2"
+"checksum hex_d_hex 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f8d2f414d892439148200ffcf2fbfb830ca74fb04ad1d6f01fbf9b730daf4827"
