@@ -40,28 +40,20 @@ fn main() {
     // add 4 bytes space at the end for the nonce
     block_vec.append(&mut vec![0, 0, 0, 0]);
     let last_4_index = block_vec.len() - 4;
-    let mut nonce = 0u32;
+    let mut nonce: u32 = 0;
     loop {
         let nonce_bytes = to_bytes(nonce);
         // combine block data and nonce into a single slice
-        block_vec[last_4_index] = nonce_bytes[0];
-        block_vec[last_4_index + 1] = nonce_bytes[1];
-        block_vec[last_4_index + 2] = nonce_bytes[2];
-        block_vec[last_4_index + 3] = nonce_bytes[3];
+        for i in 0..4 {
+            block_vec[last_4_index + i] = nonce_bytes[i];
+        }
 
         // compute checksum
         let hash: Vec<u8> = *byte_sha::sha256_of_message_as_u8_vec(&mut block_vec.clone());
 
         // check for magic success prefix
-        if leading_zero_bits([hash[0], hash[1], hash[2], hash[3]]) >= 24 {
-            print!("MINED! ");
-            for byte in hash {
-                print!("{:02x}", byte);
-            }
-            println!(" with nonce {}", nonce);
-            break;
-        } else {
-            // if not, increment nonce and loop back around
+        if leading_zero_bits([hash[0], hash[1], hash[2], hash[3]]) < 24 {
+            // nope, increment nonce and loop back around
             if nonce % 1_000_000 == 0 {
                 io::stdout()
                     .write(b".")
@@ -69,6 +61,14 @@ fn main() {
                 io::stdout().flush().expect("Error flushing stdout");
             }
             nonce += 1;
+            continue;
         }
+
+        print!("MINED! ");
+        for byte in hash {
+            print!("{:02x}", byte);
+        }
+        println!(" with nonce {}", nonce);
+        break;
     }
 }
