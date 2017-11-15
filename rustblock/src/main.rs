@@ -36,8 +36,8 @@ fn leading_zero_bits(bytes: [u8; 4]) -> u32 {
 
 fn main() {
     // get some bytes to represent the block data
-    // let mut block_string: &String = env::args().collect::<Vec<String>>().iter().nth(0).unwrap();
-    let mut block_vec = "just type something here".to_string().into_bytes();
+    let block_string: String = env::args().skip(1).next().unwrap();
+    let mut block_vec = block_string.into_bytes();
 
     // add 4 bytes space at the end for the nonce
     block_vec.append(&mut vec![0, 0, 0, 0]);
