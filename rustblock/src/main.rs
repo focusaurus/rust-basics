@@ -3,7 +3,7 @@ use shaman::digest::Digest;
 use std::env;
 use std::io::{self, Write};
 
-const DIFFICULTY:u8 = 25;
+const DIFFICULTY: u8 = 24;
 
 fn to_bytes(nonce: u32) -> [u8; 4] {
     let mut bytes = [0u8; 4];
@@ -23,7 +23,8 @@ fn leading_zero_bits(bytes: &[u8]) -> u8 {
         // check each of the 8 bits in the byte
         for _bit in 0..8 {
             // check leftmost bit for zeroness
-            if (byte & 128) == 0 { // 128 in binary is 10000000
+            if (byte & 128) == 0 {
+                // 128 in binary is 10000000
                 zero_bit_count += 1;
                 // left shift 1 bit to check the next bit
                 byte = byte << 1;
@@ -35,9 +36,12 @@ fn leading_zero_bits(bytes: &[u8]) -> u8 {
     zero_bit_count
 }
 
-fn main() {
+fn mine() -> io::Result<(String,u32)> {
     // get some bytes to represent the block data
-    let block_string: String = env::args().skip(1).next().unwrap();
+    let block_string: String = env::args()
+        .skip(1)
+        .next()
+        .unwrap_or("sample input".to_string());
     let mut block_vec = block_string.into_bytes();
 
     // add 4 bytes space at the end for the nonce
@@ -56,23 +60,32 @@ fn main() {
         // compute checksum
         hasher.reset();
         hasher.input(&block_vec);
-        let mut hash = [0u8;32];
+        let mut hash = [0u8; 32];
         hasher.result(&mut hash);
 
         // check for magic success prefix ("golden nonce")
         if leading_zero_bits(&hash[0..4]) < DIFFICULTY {
             // nope, increment nonce and loop back around
             if nonce % 1_000_000 == 0 {
-                io::stdout()
-                    .write(b".")
-                    .expect("Error writing to stdout");
-                io::stdout().flush().expect("Error flushing stdout");
+                io::stdout().write(b".")?;
+                io::stdout().flush()?;
             }
             nonce += 1;
             continue;
         }
-
-        println!("MINED! {} with nonce {}", hasher.result_str(), nonce);
         break;
+    }
+    Ok((hasher.result_str(), nonce))
+}
+
+fn main() {
+    match mine() {
+        Err(error) => {
+            eprintln!("{}", error);
+            std::process::exit(10);
+        }
+        Ok((hash, nonce)) => {
+           println!("MINED! {} with nonce {}", hash, nonce);
+        }
     }
 }
