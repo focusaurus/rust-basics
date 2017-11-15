@@ -1,6 +1,4 @@
 extern crate byte_sha;
-extern crate hex_slice;
-use hex_slice::AsHex;
 use std::env;
 use std::io::{self, Write};
 
@@ -55,8 +53,12 @@ fn main() {
         let hash: Vec<u8> = *byte_sha::sha256_of_message_as_u8_vec(&mut block_vec.clone());
 
         // check for magic success prefix
-        if leading_zero_bits([hash[0], hash[1], hash[2], hash[3]]) >= 25 {
-            println!("MINED! {:02x} with nonce {}", hash.as_hex(), nonce);
+        if leading_zero_bits([hash[0], hash[1], hash[2], hash[3]]) >= 24 {
+            print!("MINED! ");
+            for byte in hash {
+                print!("{:02x}", byte);
+            }
+            println!(" with nonce {}", nonce);
             break;
         } else {
             // if not, increment nonce and loop back around
