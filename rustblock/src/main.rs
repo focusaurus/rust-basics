@@ -3,7 +3,7 @@ use shaman::digest::Digest;
 use std::env;
 use std::io::{self, Write};
 
-const DIFFICULTY:u8 = 24;
+const DIFFICULTY:u8 = 25;
 
 fn to_bytes(nonce: u32) -> [u8; 4] {
     let mut bytes = [0u8; 4];
@@ -16,9 +16,9 @@ fn to_bytes(nonce: u32) -> [u8; 4] {
     bytes
 }
 
-fn leading_zero_bits(bytes: [u8; 4]) -> u8 {
+fn leading_zero_bits(bytes: &[u8]) -> u8 {
     let mut zero_bit_count = 0;
-    for orig_byte in &bytes {
+    for orig_byte in bytes {
         let mut byte = orig_byte.clone();
         // check each of the 8 bits in the byte
         for _bit in 0..8 {
@@ -59,8 +59,8 @@ fn main() {
         let mut hash = [0u8;32];
         hasher.result(&mut hash);
 
-        // check for magic success prefix
-        if leading_zero_bits([hash[0], hash[1], hash[2], hash[3]]) < DIFFICULTY {
+        // check for magic success prefix ("golden nonce")
+        if leading_zero_bits(&hash[0..4]) < DIFFICULTY {
             // nope, increment nonce and loop back around
             if nonce % 1_000_000 == 0 {
                 io::stdout()
