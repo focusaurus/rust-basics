@@ -52,20 +52,17 @@ fn block_bytes() -> Vec<u8> {
 }
 
 fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
+    let len = payload.len();
     // add 4 bytes space for the nonce at the end of the payload
-    let payload_len = payload.len();
-    payload.append(&mut vec![0, 0, 0, 0]);
-    // let last_4_index = payload.len() - 4;
+    payload.extend([0, 0, 0, 0].iter());
     let mut nonce: u32 = 0;
     let mut hasher = shaman::sha2::Sha256::new();
 
     loop {
         let nonce_bytes = to_bytes(nonce);
+
         // combine block data and nonce into a single slice
-        // payload.splice(payload_len..payload_len + 4, &nonce_bytes.iter());
-        for i in 0..4 {
-            payload[payload_len + i] = nonce_bytes[i];
-        }
+        payload[len..len+4].copy_from_slice(&nonce_bytes);
 
         // compute checksum
         hasher.reset();
