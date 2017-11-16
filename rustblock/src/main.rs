@@ -3,7 +3,7 @@ use shaman::digest::Digest;
 use std::env;
 use std::io::{self, Write};
 
-const DIFFICULTY: u8 = 24;
+const DIFFICULTY: u8 = 4;
 
 fn to_bytes(nonce: u32) -> [u8; 4] {
     let mut bytes = [0u8; 4];
@@ -36,13 +36,19 @@ fn leading_zero_bits(bytes: &[u8]) -> u8 {
     zero_bit_count
 }
 
-fn mine() -> io::Result<(String,u32)> {
+fn block_bytes() -> Vec<u8> {
     // get some bytes to represent the block data
-    let block_string: String = env::args()
+    env::args()
         .skip(1)
         .next()
-        .unwrap_or("sample input".to_string());
-    let mut block_vec = block_string.into_bytes();
+        .unwrap_or("sample input".to_string())
+        .into_bytes()
+
+}
+
+fn mine() -> io::Result<(String, u32)> {
+    // get some bytes to represent the block data
+    let mut block_vec = block_bytes();
 
     // add 4 bytes space at the end for the nonce
     block_vec.append(&mut vec![0, 0, 0, 0]);
@@ -85,7 +91,7 @@ fn main() {
             std::process::exit(10);
         }
         Ok((hash, nonce)) => {
-           println!("MINED! {} with nonce {}", hash, nonce);
+            println!("MINED! {} with nonce {}", hash, nonce);
         }
     }
 }
