@@ -15,7 +15,7 @@ fn to_bytes(nonce: u32) -> [u8; 4] {
     let mut bytes = [0u8; 4];
     let mut shifty = nonce;
     for i in 0..4 {
-        bytes[i] = (shifty & 255) as u8;
+        bytes[i] = (shifty & 0b11111111) as u8;
         shifty = shifty >> 8;
     }
     bytes.reverse();
@@ -29,8 +29,7 @@ fn leading_zero_bits(bytes: &[u8]) -> u8 {
         // check each of the 8 bits in the byte
         for _bit in 0..8 {
             // check leftmost bit for zeroness
-            if (byte & 128) == 0 {
-                // 128 in binary is 10000000
+            if (byte & 0b10000000) == 0 {
                 zero_bit_count += 1;
                 // left shift 1 bit to check the next bit
                 byte = byte << 1;
@@ -53,17 +52,19 @@ fn block_bytes() -> Vec<u8> {
 }
 
 fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
-    // add 4 bytes space at the end for the nonce
+    // add 4 bytes space for the nonce at the end of the payload
+    let payload_len = payload.len();
     payload.append(&mut vec![0, 0, 0, 0]);
-    let last_4_index = payload.len() - 4;
+    // let last_4_index = payload.len() - 4;
     let mut nonce: u32 = 0;
     let mut hasher = shaman::sha2::Sha256::new();
 
     loop {
         let nonce_bytes = to_bytes(nonce);
         // combine block data and nonce into a single slice
+        // payload.splice(payload_len..payload_len + 4, &nonce_bytes.iter());
         for i in 0..4 {
-            payload[last_4_index + i] = nonce_bytes[i];
+            payload[payload_len + i] = nonce_bytes[i];
         }
 
         // compute checksum
