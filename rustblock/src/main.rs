@@ -1,7 +1,7 @@
 extern crate shaman;
 use shaman::digest::Digest;
 use std::env;
-use std::io::{self, Write};
+use std::io;
 
 const DIFFICULTY: u8 = 4;
 
@@ -46,7 +46,7 @@ fn block_bytes() -> Vec<u8> {
 
 }
 
-fn mine() -> io::Result<(String, u32)> {
+fn mine<W: io::Write>(mut out: W) -> io::Result<(String, u32)> {
     // get some bytes to represent the block data
     let mut block_vec = block_bytes();
 
@@ -73,8 +73,8 @@ fn mine() -> io::Result<(String, u32)> {
         if leading_zero_bits(&hash[0..4]) < DIFFICULTY {
             // nope, increment nonce and loop back around
             if nonce % 1_000_000 == 0 {
-                io::stdout().write(b".")?;
-                io::stdout().flush()?;
+                out.write(b".")?;
+                out.flush()?;
             }
             nonce += 1;
             continue;
@@ -85,7 +85,7 @@ fn mine() -> io::Result<(String, u32)> {
 }
 
 fn main() {
-    match mine() {
+    match mine(io::stdout()) {
         Err(error) => {
             eprintln!("{}", error);
             std::process::exit(10);
