@@ -3,7 +3,13 @@ use shaman::digest::Digest;
 use std::env;
 use std::io;
 
-const DIFFICULTY: u8 = 4;
+const DIFFICULTY: u8 = 25;
+
+struct Block {
+    nonce: u32,
+    hash: String,
+    // payload: Vec<u8>,
+}
 
 fn to_bytes(nonce: u32) -> [u8; 4] {
     let mut bytes = [0u8; 4];
@@ -46,13 +52,10 @@ fn block_bytes() -> Vec<u8> {
 
 }
 
-fn mine<W: io::Write>(mut out: W) -> io::Result<(String, u32)> {
-    // get some bytes to represent the block data
-    let mut block_vec = block_bytes();
-
+fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
     // add 4 bytes space at the end for the nonce
-    block_vec.append(&mut vec![0, 0, 0, 0]);
-    let last_4_index = block_vec.len() - 4;
+    payload.append(&mut vec![0, 0, 0, 0]);
+    let last_4_index = payload.len() - 4;
     let mut nonce: u32 = 0;
     let mut hasher = shaman::sha2::Sha256::new();
 
@@ -60,12 +63,12 @@ fn mine<W: io::Write>(mut out: W) -> io::Result<(String, u32)> {
         let nonce_bytes = to_bytes(nonce);
         // combine block data and nonce into a single slice
         for i in 0..4 {
-            block_vec[last_4_index + i] = nonce_bytes[i];
+            payload[last_4_index + i] = nonce_bytes[i];
         }
 
         // compute checksum
         hasher.reset();
-        hasher.input(&block_vec);
+        hasher.input(&payload);
         let mut hash = [0u8; 32];
         hasher.result(&mut hash);
 
@@ -81,17 +84,25 @@ fn mine<W: io::Write>(mut out: W) -> io::Result<(String, u32)> {
         }
         break;
     }
-    Ok((hasher.result_str(), nonce))
+    let block = Block {
+        hash: hasher.result_str(),
+        nonce,
+        // payload,
+    };
+    Ok(block)
 }
 
 fn main() {
-    match mine(io::stdout()) {
+    // get some bytes to represent the block data
+    let payload = block_bytes();
+    match mine(io::stdout(), payload) {
         Err(error) => {
             eprintln!("{}", error);
             std::process::exit(10);
         }
-        Ok((hash, nonce)) => {
-            println!("MINED! {} with nonce {}", hash, nonce);
+        Ok(block) => {
+            println!("MINED! {} with nonce {}", block.hash, block.nonce);
         }
     }
+
 }

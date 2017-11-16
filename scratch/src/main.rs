@@ -1,40 +1,26 @@
+use std::io;
+
 #[derive(Debug)]
-struct Cart<'a> {
-    apples: u8,
-    raisins: usize,
-    description: String,
-    location: &'a [u8; 4],
+struct Block {
+    payload: Vec<u8>,
+    nonce: u32,
+    hash: String,
 }
 
-fn greet_move_back(name: String) -> String {
-    println!("Hello, {}!", name);
-    name
+fn get_payload<'a>() -> Vec<u8> {
+    "some data from greet_alloc_and_move".to_string().into_bytes()
 }
 
-fn greet_borrow(name: &String) {
-    println!("Hello, {}!", &name);
-}
-
-fn greet_alloc_and_move() -> String {
-    "some data from greet_alloc_and_move".to_string()
-}
-
-fn get_cart(bytes: &[u8; 4]) -> Cart {
-    Cart {
-        apples: 7,
-        raisins: 1000,
-        description: greet_alloc_and_move(),
-        location: bytes,
-    }
+fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
+    Ok(Block {
+        nonce: 42,
+        payload: payload,
+        hash: "42".to_string(),
+    })
 }
 
 fn main() {
-    let name = "Pete".to_string();
-    let name = greet_move_back(name);
-    let name = greet_move_back(name);
-    let data = greet_alloc_and_move();
-    println!("from greet_alloc_and_move: {}", data);
-    let cart = get_cart(&[0, 1, 2, 3]);
-    println!("cart {:?}", cart);
-    greet_borrow(&name);
+    let payload = get_payload();
+    let block = mine(io::stdout(), payload);
+    println!("block {:?}", block.unwrap());
 }
