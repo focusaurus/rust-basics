@@ -8,7 +8,7 @@ use shaman::digest::Digest;
 use std::{env, io};
 use std::io::Write;
 
-const DIFFICULTY: u8 = 24;
+const DIFFICULTY: u8 = 29;
 
 fn block_bytes() -> Vec<u8> {
     // get some bytes to represent the block data
