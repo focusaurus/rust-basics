@@ -8,3 +8,6 @@ clap = "2.27.1"
 rand = "0.3.18"                 # Random number generators and other randomness functionality.
 rayon = "0.9.0"               # Simple work-stealing parallelism for Rust
 shaman = "0.1.0"
+sha2 = "0.7.0"
+digest = "0.7.2"
+digest-writer = "0.2.0"
