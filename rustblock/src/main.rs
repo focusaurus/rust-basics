@@ -6,12 +6,17 @@ use std::{env, io};
 use rayon::iter::IntoParallelIterator;
 use std::io::Write;
 
-const DIFFICULTY: u8 = 4;
+const DIFFICULTY: u8 = 20;
 
 struct Block {
     nonce: u32,
     hash: String,
     // payload: Vec<u8>,
+}
+
+struct Answer {
+    nonce: u32,
+    block: Option<Block>,
 }
 
 fn to_bytes(nonce: u32) -> [u8; 4] {
@@ -93,7 +98,7 @@ fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
     Ok(block)
 }
 
-fn mine_nonce(mut payload: Vec<u8>, nonce: u32) -> Option<Block> {
+fn mine_nonce(mut payload: Vec<u8>, nonce: u32) -> Answer {
     let len = payload.len();
     // add 4 bytes space for the nonce at the end of the payload
     payload.extend([0, 0, 0, 0].iter());
@@ -115,9 +120,12 @@ fn mine_nonce(mut payload: Vec<u8>, nonce: u32) -> Option<Block> {
             hash: hasher.result_str(),
             nonce,
         };
-        Some(block)
+        Answer {
+            nonce,
+            block: Some(block),
+        }
     } else {
-        None
+        Answer { nonce, block: None }
     }
 }
 
@@ -141,26 +149,20 @@ fn mine_par<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block>
     let len = payload.len();
     // add 4 bytes space for the nonce at the end of the payload
     payload.extend([0, 0, 0, 0].iter());
-    let block = (0u32..u32::max_value())
+    let answer = (0u32..u32::max_value())
         .into_par_iter()
-        // .map(|&nonce| {
-        //          return mine_nonce(payload, nonce).or_else(|| if nonce % 1_000_000 == 0 {
-        //                                                out.write(b".").expect("Error stdout");
-        //                                                out.flush().expect("Error flushing stdout");
-        //                                            });
-        //      })
-        .map(|nonce| mine_nonce(vec![0,1,2,3,4,5,6,7], nonce))
-        // .find_any(|o| o.is_some() )
-        .find_any(|o| {
-            if o.is_none() {
+        .map(|nonce| mine_nonce(payload.clone(), nonce))
+        .find_any(|a| {
+            if a.block.is_none() {
+                if a.nonce % 1_000_000 == 0 {
                     let mut out = io::stdout();
                     out.write(b".").expect("w");
                     out.flush().expect("f");
+                }
             }
-            o.is_some()
-         })
-        .unwrap();
-    Ok(block.unwrap())
+            a.block.is_some()
+        });
+    Ok(answer.unwrap().block.unwrap())
 }
 
 fn main() {
@@ -173,7 +175,7 @@ fn main() {
             std::process::exit(10);
         }
         Ok(block) => {
-            println!("MINED! {} with nonce {}", block.hash, block.nonce);
+            println!("MINED!\n{} with nonce {}", block.hash, block.nonce);
         }
     }
 
