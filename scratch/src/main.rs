@@ -1,12 +1,18 @@
-fn main() {
-    let mut payload = "abcd".to_string().into_bytes();
-    let nonce_bytes = &"zzzz".to_string().into_bytes();
-    let len = payload.len();
+extern crate rand;
+extern crate rayon;
+use rand::Rng;
+use rayon::prelude::*;
+use std::{time, thread};
 
-    let range = len-4..len;
-    println!("range {:?}", range);
-    payload.extend(nonce_bytes.iter());
-    println!("p+n {:?}", payload);
-    payload[len..len+4].copy_from_slice(&"yyyy".to_string().into_bytes());
-    println!("p+n {:?}", payload);
+fn biz(nonce: u32) -> Option<u32> {
+    let millis = rand::thread_rng().gen_range(0.5, 3.5) * 1000.0;
+    let chance = rand::random::<f32>();
+    println!("checking {} sleep {} chance {}", nonce, millis, chance);
+    thread::sleep(time::Duration::from_millis(millis as u64));
+    if chance >= 0.5 { Some(nonce) } else {None}
+}
+
+fn main() {
+    let nonce = (0u32..11).into_par_iter().find_any(|&i|biz(i).is_some());
+    println!("{:?}", nonce);
 }

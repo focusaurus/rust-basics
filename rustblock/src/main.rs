@@ -3,7 +3,7 @@ use shaman::digest::Digest;
 use std::env;
 use std::io;
 
-const DIFFICULTY: u8 = 25;
+const DIFFICULTY: u8 = 27;
 
 struct Block {
     nonce: u32,

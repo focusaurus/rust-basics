@@ -5,3 +5,5 @@ authors = ["Peter Lyons <pete@peterlyons.com>"]
 
 [dependencies]
 clap = "2.27.1"
+rand = "0.3.18"                 # Random number generators and other randomness functionality. 
+rayon = "0.9.0"               # Simple work-stealing parallelism for Rust
