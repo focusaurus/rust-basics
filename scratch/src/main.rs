@@ -4,6 +4,9 @@ use rand::Rng;
 use rayon::prelude::*;
 use std::{time, thread};
 
+// fn mine_nonce(mut payload: Vec<u8>, nonce: u32) -> Option<String> {
+//
+// }
 fn biz(nonce: u32) -> Option<u32> {
     let millis = rand::thread_rng().gen_range(0.5, 3.5) * 1000.0;
     let chance = rand::random::<f32>();
