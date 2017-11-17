@@ -1,9 +1,12 @@
+extern crate rayon;
 extern crate shaman;
+use rayon::prelude::*;
 use shaman::digest::Digest;
-use std::env;
-use std::io;
+use std::{env, io};
+use rayon::iter::IntoParallelIterator;
+use std::io::Write;
 
-const DIFFICULTY: u8 = 27;
+const DIFFICULTY: u8 = 4;
 
 struct Block {
     nonce: u32,
@@ -62,7 +65,7 @@ fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
         let nonce_bytes = to_bytes(nonce);
 
         // combine block data and nonce into a single slice
-        payload[len..len+4].copy_from_slice(&nonce_bytes);
+        payload[len..len + 4].copy_from_slice(&nonce_bytes);
 
         // compute checksum
         hasher.reset();
@@ -90,10 +93,81 @@ fn mine<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
     Ok(block)
 }
 
-fn main() {
+fn mine_nonce(mut payload: Vec<u8>, nonce: u32) -> Option<Block> {
+    let len = payload.len();
+    // add 4 bytes space for the nonce at the end of the payload
+    payload.extend([0, 0, 0, 0].iter());
+    let mut hasher = shaman::sha2::Sha256::new();
+    let nonce_bytes = to_bytes(nonce);
+
+    // combine block data and nonce into a single slice
+    payload[len..len + 4].copy_from_slice(&nonce_bytes);
+
+    // compute checksum
+    hasher.reset();
+    hasher.input(&payload);
+    let mut hash = [0u8; 32];
+    hasher.result(&mut hash);
+
+    // check for magic success prefix ("golden nonce")
+    if leading_zero_bits(&hash[0..4]) >= DIFFICULTY {
+        let block = Block {
+            hash: hasher.result_str(),
+            nonce,
+        };
+        Some(block)
+    } else {
+        None
+    }
+}
+
+fn main1() {
     // get some bytes to represent the block data
     let payload = block_bytes();
     match mine(io::stdout(), payload) {
+        Err(error) => {
+            eprintln!("{}", error);
+            std::process::exit(10);
+        }
+        Ok(block) => {
+            println!("MINED! {} with nonce {}", block.hash, block.nonce);
+        }
+    }
+
+}
+
+
+fn mine_par<W: io::Write>(mut out: W, mut payload: Vec<u8>) -> io::Result<Block> {
+    let len = payload.len();
+    // add 4 bytes space for the nonce at the end of the payload
+    payload.extend([0, 0, 0, 0].iter());
+    let block = (0u32..u32::max_value())
+        .into_par_iter()
+        // .map(|&nonce| {
+        //          return mine_nonce(payload, nonce).or_else(|| if nonce % 1_000_000 == 0 {
+        //                                                out.write(b".").expect("Error stdout");
+        //                                                out.flush().expect("Error flushing stdout");
+        //                                            });
+        //      })
+        .map(|nonce| mine_nonce(vec![0,1,2,3,4,5,6,7], nonce))
+        // .find_any(|o| o.is_some() )
+        .find_any(|o| {
+            if o.is_none() {
+                    let mut out = io::stdout();
+                    out.write(b".").expect("w");
+                    out.flush().expect("f");
+            }
+            o.is_some()
+         })
+        .unwrap();
+    Ok(block.unwrap())
+}
+
+fn main() {
+    // get some bytes to represent the block data
+    let payload = block_bytes();
+    let mut stdout = io::stdout();
+    match mine_par(stdout, payload) {
         Err(error) => {
             eprintln!("{}", error);
             std::process::exit(10);
