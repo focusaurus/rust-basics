@@ -1,27 +1,22 @@
+// use rand::Rng;
+// use rayon::prelude::*;
 extern crate rand;
-extern crate rayon;
-use rand::Rng;
-use rayon::prelude::*;
-use std::{time, thread};
-
-fn mine_nonce(payload: &Vec<u8>, nonce: u32) -> Option<String> {
-    let millis = rand::thread_rng().gen_range(500, 900);
-    let is_golden = rand::random::<f32>() >= 0.99;
-    println!("N: {:>10} G: {:>5} S: {}", nonce, is_golden, millis);
-    thread::sleep(time::Duration::from_millis(millis));
-    if is_golden {
-        Some(format!("block:{}", nonce))
-    } else {
-        None
-    }
-}
+extern crate shaman;
+use shaman::digest::Digest;
+use std::{env, io, time, thread};
 
 fn main() {
-    let mut payload = vec![3, 4];
-    let block = (0u32..u32::max_value())
-        .into_par_iter()
-        .map(|n| mine_nonce(&payload, n))
-        .find_any(|o| o.is_some())
-        .unwrap();
-    println!("{:?}", block);
+    let payload = env::args()
+        .skip(1)
+        .nth(0)
+        .unwrap()
+        .to_string()
+        .into_bytes();
+    let nonce = "aaa".to_string().into_bytes();
+    let mut hasher = shaman::sha2::Sha256::new();
+    hasher.input(&payload);
+    hasher.input(&nonce);
+    let mut hash = [0u8; 32];
+    hasher.result(&mut hash);
+    println!("{:?}: {}", payload, hasher.result_str());
 }
