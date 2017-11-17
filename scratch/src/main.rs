@@ -16,7 +16,7 @@ extern crate digest_writer;
 fn main() {
     let payload = env::args()
         .skip(1)
-        .nth(0)
+        .next()
         .unwrap()
         .to_string()
         .into_bytes();

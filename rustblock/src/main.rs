@@ -6,6 +6,7 @@ use rayon::prelude::*;
 use rustblock::{Answer, Block, to_bytes, leading_zero_bits};
 use shaman::digest::Digest;
 use std::io::{self, Write};
+use std::time::SystemTime;
 
 const DIFFICULTY: u8 = 30;
 
@@ -51,8 +52,8 @@ fn mine_par(payload: &Vec<u8>) -> io::Result<Block> {
                 if a.nonce % 1_000_000 == 0 {
                     // print!("."); // No good, buffered
                     let mut out = io::stdout();
-                    out.write(b".").expect("w");
-                    out.flush().expect("f");
+                    out.write(b".").expect("Error during write");
+                    out.flush().expect("Error during flush");
                     // let mut handle = out.lock();
                     // handle.write(b".").expect("Error during write");
                     // handle.flush().expect("Error during flush");
@@ -65,13 +66,25 @@ fn mine_par(payload: &Vec<u8>) -> io::Result<Block> {
 }
 
 fn main() {
+    let now = SystemTime::now();
     match mine_par(&block_bytes()) {
         Err(error) => {
             eprintln!("{}", error);
             std::process::exit(10);
         }
         Ok(block) => {
-            println!("MINED!\n{} with nonce {}", block.hash, block.nonce);
+
+            println!("
+MINED!
+hash: {}
+difficulty: {}
+nonce: {}
+time: {} seconds
+",
+                     block.hash,
+                     DIFFICULTY,
+                     block.nonce,
+                     now.elapsed().unwrap().as_secs());
         }
     }
 
