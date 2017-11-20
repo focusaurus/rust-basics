@@ -1,34 +1,15 @@
-// use rand::Rng;
-// use rayon::prelude::*;
-extern crate rand;
-extern crate shaman;
-use shaman::digest::Digest;
-use std::{env,time, thread};
-use std::io::{self,Write};
-extern crate sha2;
-extern crate digest;
-extern crate digest_writer;
-// use std::fs::File;
-// use std::io::{self, Write};
-// use digest::FixedOutput;
-// use digest_writer::Writer;
+extern crate filesystem;
+use filesystem::FileSystem;
+
 
 fn main() {
-    let payload = env::args()
-        .skip(1)
-        .next()
-        .unwrap()
-        .to_string()
-        .into_bytes();
-        // let mut digest = Writer::new(sha2::Sha256::default());
-        // let mut f = File::open("LICENSE-MIT").unwrap();
-        // io::copy(&mut f, &mut digest).unwrap();
-        // digest.fixed_result();
-    let nonce = "aaaa".to_string().into_bytes();
-    let mut hasher = shaman::sha2::Sha256::new();
-    hasher.input(&payload);
-    hasher.input(&nonce);
-    let mut hash = [0u8; 32];
-    hasher.result(&mut hash);
-    println!("{:?}: {}", payload, hasher.result_str());
+    let fs = filesystem::FakeFileSystem::default();
+    fs.create_dir("/").expect("oops");
+    fs.set_current_dir("/").expect("oops");
+    fs.write_file("empty", []).expect("should be writeable");
+    fs.write_file("bytes", "inside of bytes".bytes().collect::<Vec<u8>>())
+        .expect("should be writeable");
+    let contents = fs.read_file("empty").expect("hey");
+    println!("{:?}", contents.len());
+    println!("{:?}", fs.read_file_to_string("bytes").unwrap());
 }
