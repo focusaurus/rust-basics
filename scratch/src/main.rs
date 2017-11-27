@@ -10,13 +10,11 @@ fn helper<F: GenFS<Permissions = rsfs::disk::Permissions>>(fs: &rsfs::disk::FS) 
     // assert_eq!(perms.mode(), 0o755);
     println!("{:?}", perms.mode());
 }
-//
-// fn main2() {
-//     let fs = rsfs::disk::FS;
-//     helper::<rsfs::disk::FS>(&fs);
-// }
+
 fn main() {
     let fs = rsfs::mem::unix::FS::new();
+    fs.create_dir_all("/tmp")
+    let file = fs.create_file("/tmp/empty");
     // let fs = rsfs::mem::unix::FS;
     // helper::<rsfs::mem::unix::FS>(&fs);
     helper2::<rsfs::mem::unix::Permissions, rsfs::mem::unix::Metadata, rsfs::mem::unix::FS>(&fs);
@@ -36,12 +34,3 @@ fn helper2<P: Permissions + PermissionsExt,
     // assert_eq!(perms.mode(), 0o755);
     println!("{:?}", perms.mode());
 }
-//
-// fn main2() {
-//     let fs = rsfs::disk::FS;
-//     let meta = fs.metadata("/").unwrap();
-//     let perms = meta.permissions();
-//         assert_eq!(perms.mode(), 0o755);
-//
-//     helper(&fs);
-// }
