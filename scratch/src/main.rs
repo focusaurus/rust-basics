@@ -2,6 +2,7 @@ enum Thing {
     Box, Fox, Socks, Docks
 }
 
+#[derive(PartialEq)]
 enum Species {
     Cat, Dog, Fox, Pig
 }
@@ -18,10 +19,7 @@ fn is_kind(thing: Thing, kind: Thing) -> bool{
 }
 
 fn is_species(animal: Animal, species: Species) -> bool {
-    match animal.species {
-        species => true,
-        _ => false
-    }
+    animal.species == species
 }
 
 fn main() {
