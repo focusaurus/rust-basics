@@ -6,3 +6,4 @@ authors = ["Peter Lyons <pete@peterlyons.com>"]
 [dependencies]
 rsfs = "0.4.1"
 pem = "0.4"
+chrono = "0.4.0"              # Date and time library for Rust
