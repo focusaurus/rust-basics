@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["Peter Lyons <pete@peterlyons.com>"]
 
 [dependencies]
+rsfs = "0.4.1"
+pem = "0.4"
