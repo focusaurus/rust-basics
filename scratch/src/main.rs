@@ -45,8 +45,6 @@ impl fmt::Display for Person {
     }
 }
 
-
-
 fn main() {
     let mut people = vec![];
     people.push(Person::new("Imogen Heap".to_string(), 1977, 12, 9));
