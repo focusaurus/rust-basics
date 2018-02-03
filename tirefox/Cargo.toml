@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["Peter Lyons <pete@peterlyons.com>"]
 
 [dependencies]
-rand = "0.3.18"                 # Random number generators and other randomness functionality.
+rand = "0.4.2"
 structopt = "0.1.7"
 structopt-derive = "0.1.6"
