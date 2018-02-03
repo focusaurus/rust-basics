@@ -13,8 +13,8 @@ use structopt::StructOpt;
 #[derive(StructOpt, Debug)]
 #[structopt(name = "tirefox", about = "Generate ellisions of random short words")]
 struct Opt {
-
-    #[structopt(short = "w", long = "words", parse(from_os_str), default_value="/usr/share/dict/words")]
+    #[structopt(short = "w", long = "words", parse(from_os_str),
+                default_value = "/usr/share/dict/words")]
     words_path: PathBuf,
 
     /// Number of words
@@ -26,11 +26,7 @@ fn suitable(word: &str) -> bool {
     // not too short
     // not too long
     // not a capitalized proper name
-    word.len() > 2 && word.len() < 8 &&
-    word.chars()
-        .nth(0)
-        .map(char::is_lowercase)
-        .unwrap_or(false)
+    word.len() > 2 && word.len() < 8 && word.chars().nth(0).map(char::is_lowercase).unwrap_or(false)
 }
 
 fn tirefox() -> io::Result<Vec<String>> {
@@ -64,15 +60,12 @@ fn main() {
                 ErrorKind::NotFound => "Words file not found",
                 ErrorKind::PermissionDenied => "Words file not readable",
                 _ => "Unexpected IO error reading words file",
-
             };
             eprintln!("{}", message);
             std::process::exit(10);
         }
-        Ok(sample) => {
-            for pair in sample.chunks(2) {
-                println!("{}{}", pair[0], pair[1]);
-            }
-        }
+        Ok(sample) => for pair in sample.chunks(2) {
+            println!("{}{}", pair[0], pair[1]);
+        },
     }
 }
