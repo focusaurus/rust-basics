@@ -1,13 +1,26 @@
-#[macro_use]
-extern crate clap;
 extern crate rand;
-use clap::{Arg, App};
+extern crate structopt;
+#[macro_use(StructOpt)]
+extern crate structopt_derive;
+
 use rand::Rng;
 use std::{fs, io};
 use std::io::ErrorKind;
 use std::io::prelude::*;
+use std::path::PathBuf;
+use structopt::StructOpt;
 
-const WORDS_PATH: &str = "/usr/share/dict/words";
+#[derive(StructOpt, Debug)]
+#[structopt(name = "tirefox", about = "Generate ellisions of random short words")]
+struct Opt {
+
+    #[structopt(short = "w", long = "words", parse(from_os_str), default_value="/usr/share/dict/words")]
+    words_path: PathBuf,
+
+    /// Number of words
+    #[structopt(short = "c", long = "count", default_value = "20")]
+    count: usize,
+}
 
 fn suitable(word: &str) -> bool {
     // not too short
@@ -21,27 +34,10 @@ fn suitable(word: &str) -> bool {
 }
 
 fn tirefox() -> io::Result<Vec<String>> {
-    let matches = App::new("tirefox")
-        .version(crate_version!())
-        .about("Generate ellisions of random short words")
-        .arg(Arg::with_name("words_path")
-                 .short("w")
-                 .long("words")
-                 .takes_value(true)
-                 // .with_default("/usr/share/dict/words")
-                 .help("Word dictionary path. One word per line."))
-        .arg(Arg::with_name("count")
-                 .short("c")
-                 .long("count")
-                 .takes_value(true)
-                 .help("How many words to generate"))
-        .get_matches();
-    let words_file = fs::File::open(matches.value_of("words_path").unwrap_or(WORDS_PATH))?;
-    // words_file.map_err(|e| io::Error::new(e.kind(), format!("Unable to read words file: {}", e)))?;
+    let opt = Opt::from_args();
+    let words_file = fs::File::open(opt.words_path)?;
     let words_reader = io::BufReader::new(&words_file);
-    let how_many = value_t!(matches, "count", usize)
-        .map_err(|e| e.exit())
-        .unwrap() * 2;
+    let how_many = opt.count * 2;
     let mut sample = Vec::with_capacity(how_many);
     for (index, line_result) in words_reader.lines().enumerate() {
         let word = line_result?;
