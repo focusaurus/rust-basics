@@ -1,4 +1,4 @@
-[root]
+[[package]]
 name = "anagram"
 version = "0.0.0"
 

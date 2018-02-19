@@ -11,9 +11,9 @@ pub fn anagrams_for<'a>(base_word: &str, words: &'a [&str]) -> Vec<&'a str> {
     words
         .iter()
         // Main anagram filter by case normalize and sort letters
-        .filter(|&&word| normalize(word) == normal_base)
+        .filter(|word| normalize(*word) == normal_base)
         // Special case for upper/lower same word isn't an anagram
-        .filter(|&&word| word.to_lowercase() != base_word.to_lowercase())
+        .filter(|word| *word.to_lowercase() != base_word.to_lowercase())
         // ref/deref hoops
         .map(|word| *word)
         .collect::<Vec<&str>>()
