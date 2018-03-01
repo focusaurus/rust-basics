@@ -8,7 +8,7 @@ use shaman::digest::Digest;
 use std::io::{self, Write};
 use std::time::SystemTime;
 
-const DIFFICULTY: u32 = 30;
+const DIFFICULTY: u32 = 27;
 
 fn block_bytes() -> Vec<u8> {
     // get some bytes to represent the block data
