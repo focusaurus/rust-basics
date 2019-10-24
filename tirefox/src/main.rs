@@ -25,8 +25,9 @@ struct Opt {
 fn suitable(word: &str) -> bool {
     // not too short
     // not too long
+    // not possessive
     // not a capitalized proper name
-    word.len() > 2 && word.len() < 8 && word.chars().nth(0).map(char::is_lowercase).unwrap_or(false)
+    word.len() > 2 && word.len() < 8 && !word.contains('\'') && word.chars().nth(0).map(char::is_lowercase).unwrap_or(false)
 }
 
 fn tirefox() -> io::Result<Vec<String>> {
