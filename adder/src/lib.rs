@@ -94,6 +94,9 @@ impl Rectangle {
     }
 }
 
+/// Here's some docs
+/// I don't know how this works
+/// But here's a third line **ok**
 pub fn add_two(value: i32) -> i32 {
     value + 2
 }
